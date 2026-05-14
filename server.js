@@ -63,35 +63,51 @@ app.delete('/api/sites/:id', (req, res) => {
 app.get('/api/employes', (req, res) => {
   const employes = DB.employes.filter(e => e.actif).map(e => ({
     ...e,
-    sites: DB.employe_sites.filter(es => es.employe_id === e.id).map(es => es.site_id)
+    sites: DB.employe_sites.filter(es => es.employe_id === e.id).map(es => es.site_id),
+    // admin_labels: { site_id: "Admin_Xxx", ... }
+    admin_labels: DB.employe_sites
+      .filter(es => es.employe_id === e.id)
+      .reduce((acc, es) => { acc[es.site_id] = es.admin_label || ''; return acc; }, {})
   }));
   res.json(employes);
 });
 
 app.post('/api/employes', (req, res) => {
-  const { nom, prenom, type_shift, pct_depot, sites } = req.body;
+  const { nom, prenom, type_shift, pct_depot, sites, admin_labels } = req.body;
+  // admin_labels = { site_id: "Admin_Xxx" }
   if (!nom || !prenom) return res.status(400).json({ error: 'Nom et prénom requis' });
   const pct = type_shift === 'nuit' ? 1.5 : 1.2;
   const emp = { id: DB.nextId.employes++, nom, prenom, type_shift: type_shift || 'jour', pct_depot: +pct_depot || pct, actif: true };
   DB.employes.push(emp);
   if (sites && sites.length) {
-    sites.forEach(sid => DB.employe_sites.push({ employe_id: emp.id, site_id: +sid }));
+    sites.forEach(sid => {
+      const label = (admin_labels && admin_labels[sid]) ? admin_labels[sid] : '';
+      DB.employe_sites.push({ employe_id: emp.id, site_id: +sid, admin_label: label });
+    });
   }
   saveDb(DB);
-  res.json({ ...emp, sites: sites || [] });
+  res.json({ ...emp, sites: sites || [], admin_labels: admin_labels || {} });
 });
 
 app.put('/api/employes/:id', (req, res) => {
   const emp = DB.employes.find(e => e.id === +req.params.id);
   if (!emp) return res.status(404).json({ error: 'Employé non trouvé' });
-  const { sites, ...data } = req.body;
+  const { sites, admin_labels, ...data } = req.body;
   Object.assign(emp, data);
   if (sites !== undefined) {
     DB.employe_sites = DB.employe_sites.filter(es => es.employe_id !== emp.id);
-    sites.forEach(sid => DB.employe_sites.push({ employe_id: emp.id, site_id: +sid }));
+    sites.forEach(sid => {
+      const label = (admin_labels && admin_labels[sid]) ? admin_labels[sid] : '';
+      DB.employe_sites.push({ employe_id: emp.id, site_id: +sid, admin_label: label });
+    });
   }
   saveDb(DB);
-  res.json({ ...emp, sites: DB.employe_sites.filter(es => es.employe_id === emp.id).map(es => es.site_id) });
+  const empSites = DB.employe_sites.filter(es => es.employe_id === emp.id);
+  res.json({
+    ...emp,
+    sites: empSites.map(es => es.site_id),
+    admin_labels: empSites.reduce((acc, es) => { acc[es.site_id] = es.admin_label || ''; return acc; }, {})
+  });
 });
 
 app.delete('/api/employes/:id', (req, res) => {
@@ -181,20 +197,33 @@ app.delete('/api/avs/:id', (req, res) => {
 });
 
 // ─── RECAP EMPLOYE ────────────────────────────────────────
-// Retourne toutes les données nécessaires au message récap + tableau mensuel
 app.get('/api/recap/:employe_id', (req, res) => {
-  const { date } = req.query; // date saisie aujourd'hui (données du jour)
+  const { date, site_id } = req.query;
+  // site_id optionnel : si fourni, génère le récap pour CE site uniquement
   const empId = +req.params.employe_id;
   const emp = DB.employes.find(e => e.id === empId);
   if (!emp) return res.status(404).json({ error: 'Employé non trouvé' });
 
   const mois = date.slice(0, 7);
-  const empSiteIds = DB.employe_sites.filter(es => es.employe_id === empId).map(es => es.site_id);
-  const sites = DB.sites.filter(s => empSiteIds.includes(s.id));
 
-  // Perfs du mois
-  const perfsMonth = DB.performances.filter(p => p.employe_id === empId && p.date.startsWith(mois));
-  // Perfs du jour
+  // Récupérer les affectations avec admin_label
+  const empAffectations = DB.employe_sites.filter(es => es.employe_id === empId);
+  const targetSiteIds = site_id
+    ? empAffectations.filter(es => es.site_id === +site_id).map(es => es.site_id)
+    : empAffectations.map(es => es.site_id);
+
+  const sites = DB.sites.filter(s => targetSiteIds.includes(s.id));
+
+  // Admin label par site
+  const adminLabels = {};
+  empAffectations.forEach(es => { adminLabels[es.site_id] = es.admin_label || `Admin_${emp.nom}`; });
+
+  // Perfs du mois (tous sites ou site ciblé)
+  const perfsMonth = DB.performances.filter(p =>
+    p.employe_id === empId &&
+    p.date.startsWith(mois) &&
+    targetSiteIds.includes(p.site_id)
+  );
   const perfsDay = perfsMonth.filter(p => p.date === date);
 
   // Totaux jour
@@ -204,7 +233,13 @@ app.get('/api/recap/:employe_id', (req, res) => {
   // Détail par site pour le jour
   const parSite = sites.map(site => {
     const perf = perfsDay.find(p => p.site_id === site.id);
-    return { site_nom: site.nom, volume: perf ? perf.volume_depot : 0, commission: perf ? perf.remuneration : 0 };
+    return {
+      site_id: site.id,
+      site_nom: site.nom,
+      admin_label: adminLabels[site.id] || `Admin_${emp.nom}`,
+      volume: perf ? perf.volume_depot : 0,
+      commission: perf ? perf.remuneration : 0
+    };
   }).filter(s => s.volume > 0);
 
   // Total mois
@@ -214,7 +249,7 @@ app.get('/api/recap/:employe_id', (req, res) => {
   const avsMonth = DB.avs.filter(a => a.employe_id === empId && a.mois === mois);
   const totalAvs = avsMonth.reduce((a, av) => a + av.montant, 0);
 
-  // Historique jour par jour du mois (tous les jours)
+  // Historique jour par jour du mois
   const [yr, mo] = mois.split('-').map(Number);
   const daysInMonth = new Date(yr, mo, 0).getDate();
   const joursNoms = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
@@ -239,9 +274,15 @@ app.get('/api/recap/:employe_id', (req, res) => {
     });
   }
 
+  // Sobriquet principal : si multi-sites, on prend le 1er site actif du jour, sinon le 1er site
+  const adminLabelPrincipal = parSite.length > 0
+    ? parSite[0].admin_label
+    : (sites.length > 0 ? (adminLabels[sites[0].id] || `Admin_${emp.nom}`) : `Admin_${emp.nom}`);
+
   res.json({
-    employe: { ...emp, sites: empSiteIds },
+    employe: { ...emp, sites: targetSiteIds, admin_labels: adminLabels },
     date, mois,
+    admin_label: adminLabelPrincipal,
     jour: {
       total_volume: totalVolDay,
       total_commission: Math.round(totalComDay),
