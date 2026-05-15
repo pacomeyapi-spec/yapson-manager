@@ -14,6 +14,28 @@
   --text:#e2e8f0; --text2:#94a3b8; --text3:#64748b;
   --radius:12px; --shadow:0 4px 24px rgba(0,0,0,0.4);
 }
+html.light {
+  --bg:#f0f4f8; --bg2:#ffffff; --bg3:#e8edf3; --card:#ffffff;
+  --border:#d1dae6; --border2:#b8c5d6;
+  --accent:#0099cc; --purple:#6d28d9;
+  --green:#059669; --red:#dc2626; --amber:#d97706;
+  --text:#0f172a; --text2:#334155; --text3:#64748b;
+  --shadow:0 4px 24px rgba(0,0,0,0.12);
+}
+html.light body { background:var(--bg); }
+html.light .sidebar { background:var(--bg2); }
+html.light input, html.light select { background:var(--bg3); color:var(--text); border-color:var(--border2); }
+html.light .card, html.light .stat, html.light .site-card, html.light .emp-card, html.light .recap-panel { background:var(--card); }
+html.light .modal { background:var(--bg2); }
+html.light .tab-bar { background:var(--bg3); }
+html.light .tab.active { background:var(--card); }
+html.light .recap-box { background:#f8fafc; color:#1e293b; border-color:var(--border2); }
+html.light .summary-bar { background:linear-gradient(135deg,rgba(0,153,204,.07),rgba(109,40,217,.07)); }
+html.light th { background:var(--bg3); }
+html.light .modal-overlay { background:rgba(0,0,0,0.4); }
+html.light .btn-secondary { color:var(--text2); }
+html.light .nav-item:hover { background:rgba(0,0,0,0.04); }
+html.light .nav-item.active { background:rgba(0,153,204,0.08); }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 .app{display:flex;min-height:100vh}
@@ -148,6 +170,12 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text)}
   <div class="nav-item" onclick="showPage('employes')" data-page="employes"><span class="nav-icon">👥</span><span class="nav-label">Employés</span></div>
   <div class="nav-item" onclick="showPage('avs')" data-page="avs"><span class="nav-icon">💸</span><span class="nav-label">Avances (AVS)</span></div>
   <div class="nav-item" onclick="showPage('historique')" data-page="historique"><span class="nav-icon">📅</span><span class="nav-label">Historique</span></div>
+  <div style="flex:1"></div>
+  <div style="padding:12px 16px;border-top:1px solid var(--border)">
+    <button onclick="toggleTheme()" id="theme-btn" style="width:100%;display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:9px 14px;cursor:pointer;color:var(--text2);font-family:inherit;font-size:13px;font-weight:500;transition:all .15s">
+      <span id="theme-icon">☀️</span><span class="nav-label" id="theme-label">Mode clair</span>
+    </button>
+  </div>
 </nav>
 
 <main class="main">
@@ -939,8 +967,35 @@ async function loadHistorique(){
     </table></div></div>`;
 }
 
+// ── THEME ─────────────────────────────────────────────────
+function toggleTheme(){
+  const isLight = document.documentElement.classList.toggle('light');
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  updateThemeBtn(isLight);
+}
+function updateThemeBtn(isLight){
+  const btn = document.getElementById('theme-btn');
+  const icon = document.getElementById('theme-icon');
+  const label = document.getElementById('theme-label');
+  if(!icon) return;
+  if(isLight){
+    icon.textContent = '🌙';
+    if(label) label.textContent = 'Mode sombre';
+  } else {
+    icon.textContent = '☀️';
+    if(label) label.textContent = 'Mode clair';
+  }
+}
+function initTheme(){
+  const saved = localStorage.getItem('theme');
+  const isLight = saved === 'light';
+  if(isLight) document.documentElement.classList.add('light');
+  updateThemeBtn(isLight);
+}
+
 // ── INIT ──────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async()=>{
+  initTheme();
   SITES = await api('GET','/api/sites').catch(()=>[]);
   EMPLOYES = await api('GET','/api/employes').catch(()=>[]);
   const d = today();

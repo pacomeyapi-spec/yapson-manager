@@ -3,3 +3,6 @@ startCommand = "node server.js"
 healthcheckPath = "/"
 healthcheckTimeout = 100
 restartPolicyType = "ON_FAILURE"
+
+[[mounts]]
+mountPath = "/app/data"
