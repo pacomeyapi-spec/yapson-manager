@@ -198,102 +198,97 @@ app.delete('/api/avs/:id', (req, res) => {
 
 // ─── RECAP EMPLOYE ────────────────────────────────────────
 app.get('/api/recap/:employe_id', (req, res) => {
-  const { date, site_id } = req.query;
-  // site_id optionnel : si fourni, génère le récap pour CE site uniquement
+  const { date } = req.query;
   const empId = +req.params.employe_id;
   const emp = DB.employes.find(e => e.id === empId);
   if (!emp) return res.status(404).json({ error: 'Employé non trouvé' });
 
   const mois = date.slice(0, 7);
+  const [yr, mo] = mois.split('-').map(Number);
+  const daysInMonth = new Date(yr, mo, 0).getDate();
+  const joursNoms = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
 
-  // Récupérer les affectations avec admin_label
   const empAffectations = DB.employe_sites.filter(es => es.employe_id === empId);
-  const targetSiteIds = site_id
-    ? empAffectations.filter(es => es.site_id === +site_id).map(es => es.site_id)
-    : empAffectations.map(es => es.site_id);
+  const allSiteIds = empAffectations.map(es => es.site_id);
+  const allSites = DB.sites.filter(s => allSiteIds.includes(s.id) && s.actif);
 
-  const sites = DB.sites.filter(s => targetSiteIds.includes(s.id));
-
-  // Admin label par site
+  // Admin label par site : NOM_SITE si pas configuré
   const adminLabels = {};
-  empAffectations.forEach(es => { adminLabels[es.site_id] = es.admin_label || `Admin_${emp.nom}`; });
+  empAffectations.forEach(es => {
+    const site = DB.sites.find(s => s.id === es.site_id);
+    const siteName = site ? site.nom : '';
+    adminLabels[es.site_id] = es.admin_label || (emp.nom + '_' + siteName);
+  });
 
-  // Perfs du mois (tous sites ou site ciblé)
+  // Toutes les perfs du mois
   const perfsMonth = DB.performances.filter(p =>
-    p.employe_id === empId &&
-    p.date.startsWith(mois) &&
-    targetSiteIds.includes(p.site_id)
+    p.employe_id === empId && p.date.startsWith(mois) && allSiteIds.includes(p.site_id)
   );
   const perfsDay = perfsMonth.filter(p => p.date === date);
-
-  // Totaux jour
-  const totalVolDay = perfsDay.reduce((a, p) => a + p.volume_depot, 0);
-  const totalComDay = perfsDay.reduce((a, p) => a + p.remuneration, 0);
-
-  // Détail par site pour le jour
-  const parSite = sites.map(site => {
-    const perf = perfsDay.find(p => p.site_id === site.id);
-    return {
-      site_id: site.id,
-      site_nom: site.nom,
-      admin_label: adminLabels[site.id] || `Admin_${emp.nom}`,
-      volume: perf ? perf.volume_depot : 0,
-      commission: perf ? perf.remuneration : 0
-    };
-  }).filter(s => s.volume > 0);
-
-  // Total mois
-  const totalComMonth = perfsMonth.reduce((a, p) => a + p.remuneration, 0);
 
   // AVS du mois
   const avsMonth = DB.avs.filter(a => a.employe_id === empId && a.mois === mois);
   const totalAvs = avsMonth.reduce((a, av) => a + av.montant, 0);
 
-  // Historique jour par jour du mois
-  const [yr, mo] = mois.split('-').map(Number);
-  const daysInMonth = new Date(yr, mo, 0).getDate();
-  const joursNoms = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
-  const joursMap = {};
-  perfsMonth.forEach(p => {
-    if (!joursMap[p.date]) joursMap[p.date] = { volume: 0, commission: 0 };
-    joursMap[p.date].volume += p.volume_depot;
-    joursMap[p.date].commission += p.remuneration;
+  // ── Stats PAR SITE ──────────────────────────────────────
+  const parSite = allSites.map(site => {
+    const adminLabel = adminLabels[site.id] || (emp.nom + '_' + site.nom);
+
+    // Perf du jour pour ce site
+    const perfDay = perfsDay.find(p => p.site_id === site.id);
+    const volJour = perfDay ? perfDay.volume_depot : 0;
+    const comJour = perfDay ? perfDay.remuneration : 0;
+
+    // Perfs du mois pour ce site
+    const perfsMoisSite = perfsMonth.filter(p => p.site_id === site.id);
+    const totalMoisSite = perfsMoisSite.reduce((a, p) => a + p.remuneration, 0);
+
+    // Historique jour par jour pour ce site
+    const joursMapSite = {};
+    perfsMoisSite.forEach(p => {
+      if (!joursMapSite[p.date]) joursMapSite[p.date] = { volume: 0, commission: 0 };
+      joursMapSite[p.date].volume += p.volume_depot;
+      joursMapSite[p.date].commission += p.remuneration;
+    });
+    const joursSite = [];
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dd = String(d).padStart(2, '0');
+      const dateStr = mois + '-' + dd;
+      const jsDate = new Date(yr, mo - 1, d);
+      const data = joursMapSite[dateStr] || { volume: 0, commission: 0 };
+      joursSite.push({
+        date: dateStr,
+        jour: joursNoms[jsDate.getDay()],
+        volume: data.volume,
+        commission: Math.round(data.commission)
+      });
+    }
+
+    return {
+      site_id: site.id,
+      site_nom: site.nom,
+      admin_label: adminLabel,
+      jour: { volume: volJour, commission: Math.round(comJour) },
+      mensuel: { total: Math.round(totalMoisSite), jours: joursSite }
+    };
   });
 
-  const jours = [];
-  for (let d = 1; d <= daysInMonth; d++) {
-    const dd = String(d).padStart(2, '0');
-    const dateStr = `${mois}-${dd}`;
-    const jsDate = new Date(yr, mo - 1, d);
-    const data = joursMap[dateStr] || { volume: 0, commission: 0 };
-    jours.push({
-      date: dateStr,
-      jour: joursNoms[jsDate.getDay()],
-      volume: data.volume,
-      commission: Math.round(data.commission)
-    });
-  }
-
-  // Sobriquet principal : si multi-sites, on prend le 1er site actif du jour, sinon le 1er site
-  const adminLabelPrincipal = parSite.length > 0
-    ? parSite[0].admin_label
-    : (sites.length > 0 ? (adminLabels[sites[0].id] || `Admin_${emp.nom}`) : `Admin_${emp.nom}`);
+  // ── Grand total ─────────────────────────────────────────
+  const grandTotalMois = parSite.reduce((a, s) => a + s.mensuel.total, 0);
+  const totalVolJour = parSite.reduce((a, s) => a + s.jour.volume, 0);
+  const totalComJour = parSite.reduce((a, s) => a + s.jour.commission, 0);
 
   res.json({
-    employe: { ...emp, sites: targetSiteIds, admin_labels: adminLabels },
+    employe: { ...emp, sites: allSiteIds, admin_labels: adminLabels },
     date, mois,
-    admin_label: adminLabelPrincipal,
-    jour: {
-      total_volume: totalVolDay,
-      total_commission: Math.round(totalComDay),
-      par_site: parSite
-    },
-    mensuel: {
-      grand_total: Math.round(totalComMonth),
+    par_site: parSite,
+    totaux: {
+      vol_jour: totalVolJour,
+      com_jour: totalComJour,
+      grand_total_mois: grandTotalMois,
       avs: Math.round(totalAvs),
       avs_details: avsMonth,
-      net: Math.round(totalComMonth - totalAvs),
-      jours
+      net: Math.round(grandTotalMois - totalAvs)
     }
   });
 });

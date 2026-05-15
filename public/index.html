@@ -60,7 +60,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 .grid-auto{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
 .stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
 .stat-label{font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
-.stat-value{font-size:26px;font-weight:700;font-family:'JetBrains Mono',monospace;line-height:1}
+.stat-value{font-size:26px;font-weight:700;font-family:var(--font-mono,monospace);line-height:1}
 .stat-value.green{color:var(--green)}.stat-value.amber{color:var(--amber)}.stat-value.red{color:var(--red)}.stat-value.accent{color:var(--accent)}
 .form-group{margin-bottom:14px}
 label{display:block;font-size:13px;font-weight:500;color:var(--text2);margin-bottom:5px}
@@ -85,7 +85,7 @@ th{text-align:left;padding:9px 12px;font-size:11px;font-weight:600;text-transfor
 td{padding:10px 12px;border-bottom:1px solid rgba(30,45,69,.5);color:var(--text2)}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:rgba(255,255,255,.02);color:var(--text)}
-.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
+.mono{font-family:var(--font-mono,monospace);font-size:13px}
 .badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
 .badge-green{background:rgba(16,185,129,.15);color:var(--green)}
 .badge-amber{background:rgba(245,158,11,.15);color:var(--amber)}
@@ -108,7 +108,7 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text)}
 .result-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-top:1px solid var(--border);margin-top:10px;font-size:13px}
 .summary-bar{background:linear-gradient(135deg,rgba(0,212,255,.08),rgba(124,58,237,.08));border:1px solid rgba(0,212,255,.2);border-radius:var(--radius);padding:18px 24px;margin-bottom:24px;display:flex;gap:32px;align-items:center;flex-wrap:wrap}
 .sum-item .sum-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
-.sum-item .sum-val{font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace;margin-top:2px}
+.sum-item .sum-val{font-size:20px;font-weight:700;font-family:var(--font-mono,monospace);margin-top:2px}
 .sum-val.green{color:var(--green)}.sum-val.red{color:var(--red)}.sum-val.amber{color:var(--amber)}.sum-val.accent{color:var(--accent)}
 .date-bar{display:flex;align-items:center;gap:12px;margin-bottom:24px}
 .emp-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:10px}
@@ -130,7 +130,7 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text)}
 .empty-icon{font-size:36px;margin-bottom:10px}
 
 /* ── RECAP MESSAGE ── */
-.recap-box{background:#0d1117;border:1px solid var(--border2);border-radius:10px;padding:18px 20px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.9;color:#c9d1d9;white-space:pre;overflow-x:auto;position:relative}
+.recap-box{background:#0d1117;border:1px solid var(--border2);border-radius:10px;padding:18px 20px;font-family:var(--font-mono,monospace);font-size:13px;line-height:1.9;color:#c9d1d9;white-space:pre;overflow-x:auto;position:relative}
 .recap-copy-btn{position:absolute;top:12px;right:12px}
 
 /* ── TABLEAU MENSUEL ── */
@@ -148,7 +148,7 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text)}
 .recap-panel .emp-select-bar{display:flex;gap:12px;align-items:flex-end;margin-bottom:20px;flex-wrap:wrap}
 
 /* Saisie result inline */
-.inline-result{font-size:12px;color:var(--green);margin-top:3px;font-family:'JetBrains Mono',monospace}
+.inline-result{font-size:12px;color:var(--green);margin-top:3px;font-family:var(--font-mono,monospace)}
 
 @media(max-width:900px){.grid-4{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){.sidebar{width:56px}.sidebar .nav-label,.sidebar .logo-title,.sidebar .logo-sub{display:none}.main{margin-left:56px;padding:16px}.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}.summary-bar{flex-direction:column;gap:12px}}
@@ -474,7 +474,7 @@ async function loadEmployes(){
       </div>
       <div class="flex justify-between items-center">
         <span class="badge ${e.type_shift==='nuit'?'badge-purple':'badge-blue'}">${e.type_shift==='nuit'?'🌙 Nuit':'☀️ Journée'}</span>
-        <span style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--green);font-weight:600">${fmtDec(e.pct_depot)}%</span>
+        <span style="font-family:var(--font-mono,monospace);font-size:14px;color:var(--green);font-weight:600">${fmtDec(e.pct_depot)}%</span>
       </div>
       <div class="flex gap-8">
         <button class="btn btn-sm btn-secondary" style="flex:1" onclick="editEmploye(${e.id})">✏️ Modifier</button>
@@ -654,179 +654,157 @@ async function loadRecap(){
 }
 
 function renderRecap(data){
-  const { employe: emp, date, mois, jour, mensuel } = data;
-  const empSites = (emp.sites||[]).map(sid=>SITES.find(s=>s.id===sid)?.nom).filter(Boolean);
-
-  // ── Message à copier (format vu sur la capture) ──
-  const dateLabel = fmtDate(date);
+  const { employe: emp, date, mois, par_site, totaux } = data;
   const [yr, mo] = mois.split('-').map(Number);
   const moisNoms = ['','Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
-  const moisLabel = `${moisNoms[mo]} ${yr}`;
+  const moisLabel = moisNoms[mo] + ' ' + yr;
+  const dateLabel = fmtDate(date);
+  const multiSite = par_site.length > 1;
 
+  // ── MESSAGE À COPIER ────────────────────────────────────
   let msgLines = [];
-  msgLines.push(`Admin_${emp.nom.toUpperCase()}`);
-  msgLines.push(`Date:         ${dateLabel}`);
 
-  // Par site si plusieurs
-  if(jour.par_site.length > 1){
-    jour.par_site.forEach(s=>{
-      msgLines.push(`──────────────`);
-      msgLines.push(`Site: ${s.site_nom}`);
-      msgLines.push(`Total:        ${fmt(s.volume)} FCFA`);
-      msgLines.push(`Commission:   ${fmt(Math.round(s.commission))} FCFA`);
-    });
-    msgLines.push(`══════════════`);
+  par_site.forEach((s, i) => {
+    if(i > 0) msgLines.push('');
+    msgLines.push(s.admin_label);
+    msgLines.push('Date:         ' + dateLabel);
+    msgLines.push('Total:        ' + fmt(s.jour.volume) + ' FCFA');
+    msgLines.push('Commission:   ' + fmt(s.jour.commission) + ' FCFA');
+    msgLines.push('Total mois:   ' + fmt(s.mensuel.total) + ' FCFA');
+    msgLines.push('──────────────');
+  });
+
+  msgLines.push('');
+  msgLines.push('AVS:          ' + fmt(totaux.avs) + ' FCFA');
+  msgLines.push('');
+  msgLines.push('GRAND TOTAL');
+  msgLines.push(fmt(totaux.grand_total_mois) + ' FCFA');
+  if(totaux.avs > 0){
+    msgLines.push('');
+    msgLines.push('NET À PERCEVOIR');
+    msgLines.push(fmt(totaux.net) + ' FCFA');
   }
-
-  msgLines.push(`Total:        ${fmt(jour.total_volume)} FCFA`);
-  msgLines.push(`Commission:   ${fmt(jour.total_commission)} FCFA`);
-  msgLines.push(`AVS:          ${fmt(mensuel.avs)} FCFA`);
-  msgLines.push(`Total mois:   ${fmt(mensuel.grand_total)} FCFA`);
-  msgLines.push(``);
-  msgLines.push(`GRAND TOTAL`);
-  msgLines.push(`${fmt(mensuel.grand_total)} FCFA`);
-  if(mensuel.avs > 0){
-    msgLines.push(``);
-    msgLines.push(`NET À PERCEVOIR`);
-    msgLines.push(`${fmt(mensuel.net)} FCFA`);
-  }
-
   const msgText = msgLines.join('\n');
 
-  // ── Tableau mensuel ──
-  const joursRows = mensuel.jours.map(j=>{
-    const isToday = j.date === date;
-    const cls = isToday ? 'today-row' : '';
-    const vCls = j.volume > 0 ? 'nonzero' : 'zero';
-    const cCls = j.commission > 0 ? 'nonzero' : 'zero';
-    return `<tr class="${cls}">
-      <td style="color:var(--text3);font-size:12px">${j.jour}</td>
-      <td class="mono" style="font-size:12px">${fmtDate(j.date)}</td>
-      <td class="mono ${vCls}" style="text-align:right">${j.volume>0?fmt(j.volume):''}</td>
-      <td class="mono ${cCls}" style="text-align:right">${fmt(j.commission)}</td>
-    </tr>`;
+  // ── TABLEAUX MENSUELS PAR SITE ───────────────────────────
+  const tableauxSites = par_site.map(s => {
+    const rows = s.mensuel.jours.map(j => {
+      const isToday = j.date === date;
+      const cls = isToday ? 'today-row' : '';
+      return '<tr class="' + cls + '">'
+        + '<td style="color:var(--text3);font-size:12px">' + j.jour + '</td>'
+        + '<td class="mono" style="font-size:12px">' + fmtDate(j.date) + '</td>'
+        + '<td class="mono ' + (j.volume > 0 ? 'nonzero' : 'zero') + '" style="text-align:right">' + (j.volume > 0 ? fmt(j.volume) : '') + '</td>'
+        + '<td class="mono ' + (j.commission > 0 ? 'nonzero' : 'zero') + '" style="text-align:right">' + fmt(j.commission) + '</td>'
+        + '</tr>';
+    }).join('');
+    const totalVol = s.mensuel.jours.reduce((a,j) => a + j.volume, 0);
+    return '<div class="card" style="margin-bottom:16px">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">'
+      + '<div style="font-size:14px;font-weight:700;color:var(--accent)">📊 ' + s.admin_label + '</div>'
+      + '<div class="avs-badge">' + fmt(s.mensuel.total) + ' FCFA</div>'
+      + '</div>'
+      + '<div class="table-wrap"><table class="mensuel-table">'
+      + '<thead><tr><th>Jour</th><th>Date</th><th style="text-align:right">Total</th><th style="text-align:right">Commissions</th></tr></thead>'
+      + '<tbody>' + rows + '</tbody>'
+      + '<tfoot><tr style="border-top:2px solid var(--border2)">'
+      + '<td colspan="2" style="font-weight:600;color:var(--text);padding:10px 12px">TOTAL</td>'
+      + '<td class="mono" style="text-align:right;color:var(--text);font-weight:600">' + fmt(totalVol) + '</td>'
+      + '<td class="mono" style="text-align:right;color:var(--accent);font-weight:700">' + fmt(s.mensuel.total) + '</td>'
+      + '</tr></tfoot>'
+      + '</table></div></div>';
   }).join('');
 
-  // AVS details
-  const avsHtml = mensuel.avs_details.length ? `
-    <div style="margin-top:12px">
-      <div class="card-title">Avances sur salaire — ${moisLabel}</div>
-      ${mensuel.avs_details.map(a=>`
-        <div class="flex justify-between items-center" style="padding:6px 0;border-bottom:1px solid var(--border);font-size:13px">
-          <span style="color:var(--text2)">${a.note||'Avance'}</span>
-          <span class="avs-badge">-${fmt(a.montant)} FCFA</span>
-        </div>`).join('')}
-      <div class="flex justify-between items-center" style="padding:8px 0;font-size:14px;font-weight:600">
-        <span style="color:var(--text)">Total AVS</span>
-        <span style="color:var(--amber);font-family:'JetBrains Mono',monospace">-${fmt(mensuel.avs)} FCFA</span>
-      </div>
-    </div>` : '';
+  // ── RÉSUMÉ JOUR PAR SITE ─────────────────────────────────
+  const resumeJour = par_site.map(s =>
+    '<div style="background:var(--bg3);border-radius:8px;padding:10px 14px;margin-bottom:8px">'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+    + '<span style="font-size:13px;color:var(--accent);font-weight:600">📍 ' + s.site_nom + '</span>'
+    + '<span style="font-size:11px;font-family:var(--font-mono,monospace);color:var(--text3)">' + s.admin_label + '</span>'
+    + '</div>'
+    + '<div style="display:flex;justify-content:space-between;font-size:13px;padding:2px 0">'
+    + '<span style="color:var(--text3)">Volume</span>'
+    + '<span class="mono">' + fmt(s.jour.volume) + ' FCFA</span>'
+    + '</div>'
+    + '<div style="display:flex;justify-content:space-between;font-size:13px;padding:2px 0">'
+    + '<span style="color:var(--text3)">Commission</span>'
+    + '<span class="mono" style="color:var(--green)">' + fmt(s.jour.commission) + ' FCFA</span>'
+    + '</div>'
+    + '<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-top:1px solid var(--border);margin-top:6px">'
+    + '<span style="color:var(--text2)">Total mois</span>'
+    + '<span class="mono" style="color:var(--accent);font-weight:600">' + fmt(s.mensuel.total) + ' FCFA</span>'
+    + '</div>'
+    + '</div>'
+  ).join('');
 
-  document.getElementById('recap-content').innerHTML = `
-    <div class="grid-2" style="gap:20px;align-items:start">
+  // ── AVS ──────────────────────────────────────────────────
+  const avsHtml = totaux.avs_details.length ? '<div style="margin-top:12px">'
+    + '<div class="card-title">AVS — ' + moisLabel + '</div>'
+    + totaux.avs_details.map(a =>
+        '<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:13px">'
+        + '<span style="color:var(--text2)">' + (a.note || 'Avance') + '</span>'
+        + '<span class="avs-badge">-' + fmt(a.montant) + ' FCFA</span>'
+        + '</div>').join('')
+    + '<div style="display:flex;justify-content:space-between;padding:7px 0;font-size:14px;font-weight:600">'
+    + '<span style="color:var(--text)">Total AVS</span>'
+    + '<span style="color:var(--amber);font-family:var(--font-mono,monospace)">-' + fmt(totaux.avs) + ' FCFA</span>'
+    + '</div></div>' : '';
 
-      <!-- Colonne gauche: résumé + message -->
-      <div style="display:flex;flex-direction:column;gap:16px">
+  document.getElementById('recap-content').innerHTML =
+    '<div class="grid-2" style="gap:20px;align-items:start">'
 
-        <!-- Résumé du jour -->
-        <div class="card">
-          <div class="card-title">📅 ${dateLabel} — ${emp.prenom} ${emp.nom}</div>
-          ${jour.par_site.length>1?`
-            ${jour.par_site.map(s=>`
-              <div style="background:var(--bg3);border-radius:8px;padding:10px 14px;margin-bottom:8px">
-                <div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:6px">📍 ${s.site_nom}</div>
-                <div class="flex justify-between" style="font-size:13px">
-                  <span style="color:var(--text3)">Volume</span><span class="mono">${fmt(s.volume)} FCFA</span>
-                </div>
-                <div class="flex justify-between" style="font-size:13px">
-                  <span style="color:var(--text3)">Commission</span><span class="mono" style="color:var(--green)">${fmt(Math.round(s.commission))} FCFA</span>
-                </div>
-              </div>`).join('')}
-            <div class="divider"></div>
-          `:''}
-          <div class="flex justify-between" style="font-size:14px;padding:4px 0">
-            <span style="color:var(--text2)">Total volume</span>
-            <span class="mono" style="font-weight:600">${fmt(jour.total_volume)} FCFA</span>
-          </div>
-          <div class="flex justify-between" style="font-size:15px;padding:6px 0;border-top:1px solid var(--border);margin-top:6px">
-            <span style="font-weight:600;color:var(--text)">Commission du jour</span>
-            <span class="mono" style="color:var(--green);font-weight:700;font-size:16px">${fmt(jour.total_commission)} FCFA</span>
-          </div>
-        </div>
+    // ── COLONNE GAUCHE ──
+    + '<div style="display:flex;flex-direction:column;gap:16px">'
 
-        <!-- Résumé mensuel -->
-        <div class="card">
-          <div class="card-title">📆 ${moisLabel} — Bilan mensuel</div>
-          <div class="flex justify-between" style="font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)">
-            <span style="color:var(--text2)">Total commissions mois</span>
-            <span class="mono" style="color:var(--green)">${fmt(mensuel.grand_total)} FCFA</span>
-          </div>
-          ${mensuel.avs>0?`<div class="flex justify-between" style="font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)">
-            <span style="color:var(--text2)">AVS</span>
-            <span class="mono" style="color:var(--amber)">-${fmt(mensuel.avs)} FCFA</span>
-          </div>`:''}
-          <div class="flex justify-between" style="font-size:15px;padding:8px 0;margin-top:4px">
-            <span style="font-weight:600;color:var(--text)">GRAND TOTAL</span>
-            <span class="mono" style="color:var(--accent);font-weight:700;font-size:17px">${fmt(mensuel.grand_total)} FCFA</span>
-          </div>
-          ${mensuel.avs>0?`<div class="flex justify-between" style="font-size:14px;padding:4px 0;margin-top:2px">
-            <span style="color:var(--text)">Net à percevoir</span>
-            <span class="mono" style="color:${mensuel.net>=0?'var(--green)':'var(--red)'};font-weight:700">${fmt(mensuel.net)} FCFA</span>
-          </div>`:''}
-          ${avsHtml}
-        </div>
+    // Résumé jour
+    + '<div class="card">'
+    + '<div class="card-title">📅 ' + dateLabel + ' — ' + emp.prenom + ' ' + emp.nom + '</div>'
+    + resumeJour
+    + '<div style="display:flex;justify-content:space-between;font-size:15px;padding:8px 0;border-top:2px solid rgba(0,212,255,.3);margin-top:8px">'
+    + '<span style="font-weight:700;color:var(--text)">Total commission jour</span>'
+    + '<span class="mono" style="color:var(--green);font-weight:700;font-size:16px">' + fmt(totaux.com_jour) + ' FCFA</span>'
+    + '</div></div>'
 
-        <!-- Message à copier -->
-        <div class="card">
-          <div class="card-title flex justify-between items-center">
-            <span>💬 Message à envoyer</span>
-          </div>
-          <div style="position:relative">
-            <div class="recap-box" id="recap-msg-box">${msgText}</div>
-            <button class="btn btn-primary btn-sm" style="position:absolute;top:10px;right:10px" onclick="copyRecap()">📋 Copier</button>
-          </div>
-        </div>
-      </div>
+    // Bilan mensuel global
+    + '<div class="card">'
+    + '<div class="card-title">📆 ' + moisLabel + ' — Bilan mensuel</div>'
+    + par_site.map(s =>
+        '<div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)">'
+        + '<span style="color:var(--text2)">' + s.admin_label + '</span>'
+        + '<span class="mono" style="color:var(--green)">' + fmt(s.mensuel.total) + ' FCFA</span>'
+        + '</div>').join('')
+    + (totaux.avs > 0 ?
+        '<div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)">'
+        + '<span style="color:var(--text2)">AVS</span>'
+        + '<span class="mono" style="color:var(--amber)">-' + fmt(totaux.avs) + ' FCFA</span>'
+        + '</div>' : '')
+    + '<div style="display:flex;justify-content:space-between;font-size:16px;padding:10px 0;margin-top:4px">'
+    + '<span style="font-weight:700;color:var(--text)">GRAND TOTAL</span>'
+    + '<span class="mono" style="color:var(--accent);font-weight:700;font-size:18px">' + fmt(totaux.grand_total_mois) + ' FCFA</span>'
+    + '</div>'
+    + (totaux.avs > 0 ?
+        '<div style="display:flex;justify-content:space-between;font-size:14px;padding:4px 0">'
+        + '<span style="color:var(--text)">Net à percevoir</span>'
+        + '<span class="mono" style="color:' + (totaux.net >= 0 ? 'var(--green)' : 'var(--red)') + ';font-weight:700">' + fmt(totaux.net) + ' FCFA</span>'
+        + '</div>' : '')
+    + avsHtml
+    + '</div>'
 
-      <!-- Colonne droite: tableau mensuel -->
-      <div class="card">
-        <div class="card-title flex justify-between items-center">
-          <span>📊 Détail mensuel — ${moisLabel}</span>
-          <div class="avs-badge">GRAND TOTAL: ${fmt(mensuel.grand_total)} FCFA</div>
-        </div>
-        <div class="table-wrap">
-          <table class="mensuel-table">
-            <thead>
-              <tr>
-                <th>Jour</th>
-                <th>Date</th>
-                <th style="text-align:right">Total</th>
-                <th style="text-align:right">Commissions</th>
-              </tr>
-            </thead>
-            <tbody>${joursRows}</tbody>
-            <tfoot>
-              <tr style="border-top:2px solid var(--border2)">
-                <td colspan="2" style="font-weight:600;color:var(--text);padding:10px 12px">TOTAL MOIS</td>
-                <td class="mono" style="text-align:right;color:var(--text);font-weight:600">${fmt(mensuel.jours.reduce((a,j)=>a+j.volume,0))}</td>
-                <td class="mono" style="text-align:right;color:var(--accent);font-weight:700;font-size:14px">${fmt(mensuel.grand_total)}</td>
-              </tr>
-              ${mensuel.avs>0?`<tr>
-                <td colspan="2" style="font-size:13px;color:var(--amber);padding:6px 12px">AVS</td>
-                <td></td>
-                <td class="mono" style="text-align:right;color:var(--amber)">-${fmt(mensuel.avs)}</td>
-              </tr>
-              <tr>
-                <td colspan="2" style="font-weight:700;color:var(--text);padding:6px 12px">NET</td>
-                <td></td>
-                <td class="mono" style="text-align:right;color:var(--green);font-weight:700">${fmt(mensuel.net)}</td>
-              </tr>`:''}
-            </tfoot>
-          </table>
-        </div>
-      </div>
+    // Message à copier
+    + '<div class="card">'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
+    + '<span class="card-title" style="margin:0">💬 Message à envoyer</span>'
+    + '<button class="btn btn-primary btn-sm" onclick="copyRecap()">📋 Copier</button>'
+    + '</div>'
+    + '<div class="recap-box" id="recap-msg-box">' + msgText + '</div>'
+    + '</div>'
 
-    </div>`;
+    + '</div>'
+
+    // ── COLONNE DROITE : tableaux par site ──
+    + '<div>' + tableauxSites + '</div>'
+
+    + '</div>';
 }
 
 function copyRecap(){
@@ -906,7 +884,7 @@ function renderDashboard(data){
     return `<div style="display:flex;align-items:center;gap:10px;font-size:13px;margin-bottom:8px">
       <span style="min-width:140px;color:var(--text2);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.site.nom}</span>
       <div style="flex:1;background:var(--bg3);border-radius:4px;height:20px;overflow:hidden">
-        <div style="width:${w}%;height:100%;background:var(--accent);border-radius:4px;display:flex;align-items:center;padding:0 6px;font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:600;color:#000">${w>20?fmt(vol)+' FCFA':''}</div>
+        <div style="width:${w}%;height:100%;background:var(--accent);border-radius:4px;display:flex;align-items:center;padding:0 6px;font-size:11px;font-family:var(--font-mono,monospace);font-weight:600;color:#000">${w>20?fmt(vol)+' FCFA':''}</div>
       </div>
     </div>`;
   }).join('');
