@@ -465,7 +465,7 @@ async function openEmpModal(emp=null){
       sitesHtml += ' onchange="toggleCheckEmp(' + s.id + ',this.checked)"> ' + s.nom + '</label>';
     });
   } else {
-    sitesHtml = '<span style="color:var(--text3);font-size:13px">Aucun site — créez des sites d'abord</span>';
+    sitesHtml = '<span style="color:var(--text3);font-size:13px">Aucun site — créez des sites dabord</span>';
   }
   document.getElementById('emp-sites-check').innerHTML = sitesHtml;
   openModal('modal-emp');
