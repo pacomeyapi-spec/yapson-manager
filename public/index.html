@@ -447,19 +447,32 @@ async function loadEmployes(){
   }).join('');
 }
 
-function openEmpModal(emp=null){
-  document.getElementById('emp-edit-id').value = emp?emp.id:'';
-  document.getElementById('modal-emp-title').textContent = emp?'Modifier employé':'Nouvel employé';
-  document.getElementById('emp-prenom').value = emp?emp.prenom:'';
-  document.getElementById('emp-nom').value = emp?emp.nom:'';
-  document.getElementById('emp-shift').value = emp?emp.type_shift:'jour';
-  document.getElementById('emp-pct').value = emp?emp.pct_depot:1.2;
-  const empSites = emp?(emp.sites||[]):[];
-  document.getElementById('emp-sites-check').innerHTML = SITES.map(s=>`
-    <label class="checkbox-item ${empSites.includes(s.id)?'checked':''}" id="citem-${s.id}">
-      <input type="checkbox" value="${s.id}" ${empSites.includes(s.id)?'checked':''} onchange="document.getElementById('citem-${s.id}').classList.toggle('checked',this.checked)"> ${s.nom}
-    </label>`).join('');
+async function openEmpModal(emp=null){
+  if(!SITES.length) SITES = await api('GET','/api/sites');
+  document.getElementById('emp-edit-id').value = emp ? emp.id : '';
+  document.getElementById('modal-emp-title').textContent = emp ? 'Modifier employé' : 'Nouvel employé';
+  document.getElementById('emp-prenom').value = emp ? emp.prenom : '';
+  document.getElementById('emp-nom').value = emp ? emp.nom : '';
+  document.getElementById('emp-shift').value = emp ? emp.type_shift : 'jour';
+  document.getElementById('emp-pct').value = emp ? emp.pct_depot : 1.2;
+  const empSites = emp ? (emp.sites || []).map(Number) : [];
+  let sitesHtml = '';
+  if(SITES.length) {
+    SITES.forEach(s => {
+      const checked = empSites.includes(s.id);
+      sitesHtml += '<label class="checkbox-item' + (checked ? ' checked' : '') + '" id="citem-' + s.id + '">';
+      sitesHtml += '<input type="checkbox" value="' + s.id + '"' + (checked ? ' checked' : '');
+      sitesHtml += ' onchange="toggleCheckEmp(' + s.id + ',this.checked)"> ' + s.nom + '</label>';
+    });
+  } else {
+    sitesHtml = '<span style="color:var(--text3);font-size:13px">Aucun site — créez des sites d'abord</span>';
+  }
+  document.getElementById('emp-sites-check').innerHTML = sitesHtml;
   openModal('modal-emp');
+}
+function toggleCheckEmp(siteId, checked){
+  const el = document.getElementById('citem-' + siteId);
+  if(el) el.classList.toggle('checked', checked);
 }
 function editEmploye(id){ openEmpModal(EMPLOYES.find(e=>e.id===id)); }
 function updateEmpPct(){ document.getElementById('emp-pct').value = document.getElementById('emp-shift').value==='nuit'?1.5:1.2; }
