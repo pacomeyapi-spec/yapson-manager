@@ -338,5 +338,21 @@ app.get('/api/historique', (req, res) => {
   res.json(Object.values(byDate).sort((a, b) => b.date.localeCompare(a.date)).map(d => ({ ...d, net: d.commission - (d.remuneration || 0) })));
 });
 
+// ─── BACKUP / RESTORE ────────────────────────────────────
+app.get('/api/backup', (req, res) => {
+  res.setHeader('Content-Disposition', 'attachment; filename="yapson-backup-' + new Date().toISOString().slice(0,10) + '.json"');
+  res.setHeader('Content-Type', 'application/json');
+  res.json(DB);
+});
+
+app.post('/api/restore', (req, res) => {
+  const data = req.body;
+  if (!data || !data.sites || !data.employes) return res.status(400).json({ error: 'Données invalides' });
+  DB = data;
+  if (!DB.avs) { DB.avs = []; DB.nextId.avs = 1; }
+  saveDb(DB);
+  res.json({ ok: true, msg: 'Données restaurées avec succès' });
+});
+
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.listen(PORT, () => console.log(`✅ Yapson Manager démarré sur port ${PORT}`));

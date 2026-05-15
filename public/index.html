@@ -171,7 +171,16 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text)}
   <div class="nav-item" onclick="showPage('avs')" data-page="avs"><span class="nav-icon">💸</span><span class="nav-label">Avances (AVS)</span></div>
   <div class="nav-item" onclick="showPage('historique')" data-page="historique"><span class="nav-icon">📅</span><span class="nav-label">Historique</span></div>
   <div style="flex:1"></div>
-  <div style="padding:12px 16px;border-top:1px solid var(--border)">
+  <div style="padding:12px 16px 0;display:flex;flex-direction:column;gap:8px">
+    <button onclick="backupData()" style="width:100%;display:flex;align-items:center;gap:10px;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);border-radius:8px;padding:8px 14px;cursor:pointer;color:#10b981;font-family:inherit;font-size:12px;font-weight:600;transition:all .15s">
+      <span>💾</span><span class="nav-label">Sauvegarder</span>
+    </button>
+    <label style="width:100%;display:flex;align-items:center;gap:10px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:8px 14px;cursor:pointer;color:#f59e0b;font-family:inherit;font-size:12px;font-weight:600" title="Importer un fichier de sauvegarde">
+      <span>📂</span><span class="nav-label">Restaurer</span>
+      <input type="file" accept=".json" onchange="restoreData(this)" style="display:none">
+    </label>
+  </div>
+  <div style="padding:8px 16px 12px;border-bottom:1px solid var(--border)">
     <button onclick="toggleTheme()" id="theme-btn" style="width:100%;display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:9px 14px;cursor:pointer;color:var(--text2);font-family:inherit;font-size:13px;font-weight:500;transition:all .15s">
       <span id="theme-icon">☀️</span><span class="nav-label" id="theme-label">Mode clair</span>
     </button>
@@ -965,6 +974,35 @@ async function loadHistorique(){
         <td class="mono" style="color:${d.net>=0?'var(--accent)':'var(--red)'};font-weight:700">${fmt(d.net)}</td>
       </tr>`).join('')}</tbody>
     </table></div></div>`;
+}
+
+// ── BACKUP / RESTORE ──────────────────────────────────────
+function backupData(){
+  const a = document.createElement('a');
+  a.href = '/api/backup';
+  a.download = 'yapson-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  toast('Sauvegarde téléchargée');
+}
+async function restoreData(input){
+  const file = input.files[0];
+  if(!file) return;
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+    if(!data.sites || !data.employes) throw new Error('Fichier invalide');
+    if(!confirm('Restaurer les données depuis ce fichier ? Cela remplacera toutes les données actuelles.')) { input.value=''; return; }
+    const res = await api('POST', '/api/restore', data);
+    toast('Données restaurées avec succès !');
+    input.value = '';
+    // Recharger
+    SITES = await api('GET','/api/sites');
+    EMPLOYES = await api('GET','/api/employes');
+    loadDashboard();
+  } catch(e) {
+    toast('Erreur: ' + e.message, 'error');
+    input.value = '';
+  }
 }
 
 // ── THEME ─────────────────────────────────────────────────
