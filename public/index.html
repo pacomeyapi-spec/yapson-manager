@@ -6,14 +6,21 @@
 <title>Yapson Manager</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0a0e1a;--bg2:#111827;--bg3:#1a2235;--card:#141c2e;--border:#1e2d45;--border2:#2a3f5f;--accent:#00d4ff;--purple:#7c3aed;--green:#10b981;--red:#ef4444;--amber:#f59e0b;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;--radius:12px;--shadow:0 4px 24px rgba(0,0,0,.4)}
+:root {
+  --bg:#0a0e1a; --bg2:#111827; --bg3:#1a2235; --card:#141c2e;
+  --border:#1e2d45; --border2:#2a3f5f;
+  --accent:#00d4ff; --purple:#7c3aed;
+  --green:#10b981; --red:#ef4444; --amber:#f59e0b;
+  --text:#e2e8f0; --text2:#94a3b8; --text3:#64748b;
+  --radius:12px; --shadow:0 4px 24px rgba(0,0,0,0.4);
+}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 .app{display:flex;min-height:100vh}
 .sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border);padding:24px 0;display:flex;flex-direction:column;position:fixed;height:100vh;z-index:100;overflow-y:auto}
 .main{margin-left:220px;flex:1;padding:32px;max-width:1400px}
 .logo{padding:0 20px 24px;border-bottom:1px solid var(--border);margin-bottom:16px}
-.logo-title{font-size:18px;font-weight:700;color:var(--accent);letter-spacing:-.5px}
+.logo-title{font-size:18px;font-weight:700;color:var(--accent);letter-spacing:-0.5px}
 .logo-sub{font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;color:var(--text2);font-size:14px;font-weight:500;border-left:3px solid transparent;transition:all .15s}
 .nav-item:hover{color:var(--text);background:rgba(255,255,255,.04)}
@@ -21,7 +28,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 .nav-icon{font-size:18px;width:20px;text-align:center}
 .page{display:none}.page.active{display:block}
 .page-header{margin-bottom:28px}
-.page-title{font-size:26px;font-weight:700;letter-spacing:-.5px}
+.page-title{font-size:26px;font-weight:700;letter-spacing:-0.5px}
 .page-sub{font-size:14px;color:var(--text3);margin-top:4px}
 .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
 .card-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:16px}
@@ -38,28 +45,17 @@ label{display:block;font-size:13px;font-weight:500;color:var(--text2);margin-bot
 input,select,textarea{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:9px 13px;color:var(--text);font-family:inherit;font-size:14px;outline:none;transition:border-color .15s}
 input:focus,select:focus{border-color:var(--accent)}
 input::placeholder{color:var(--text3)}
-input.input-error{border-color:var(--red)}
 select option{background:var(--bg2)}
-
-/* ── SITE AFFECTATION BLOCK ── */
-.site-aff-block{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px;transition:border-color .15s}
-.site-aff-block.active{border-color:var(--accent)}
-.site-aff-header{display:flex;align-items:center;gap:10px;margin-bottom:0}
-.site-aff-header input[type=checkbox]{width:auto;accent-color:var(--accent);cursor:pointer;width:16px;height:16px;flex-shrink:0}
-.site-aff-label{font-size:14px;font-weight:600;color:var(--text2);cursor:pointer;flex:1}
-.site-aff-block.active .site-aff-label{color:var(--accent)}
-.site-aff-fields{margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
-.site-aff-fields label{font-size:12px;color:var(--text3)}
-.admin-input-wrap{position:relative}
-.admin-prefix{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none;font-family:'JetBrains Mono',monospace}
-.admin-input{padding-left:58px !important;font-family:'JetBrains Mono',monospace;font-size:13px}
-
+.checkbox-group{display:flex;flex-wrap:wrap;gap:8px}
+.checkbox-item{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:13px;color:var(--text2);transition:all .15s}
+.checkbox-item.checked{background:rgba(0,212,255,.1);border-color:var(--accent);color:var(--accent)}
+.checkbox-item input[type=checkbox]{width:auto;accent-color:var(--accent);cursor:pointer}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
 .btn-primary{background:var(--accent);color:#000}.btn-primary:hover{background:#00b8e0;transform:translateY(-1px)}
 .btn-secondary{background:transparent;color:var(--text2);border:1px solid var(--border2)}.btn-secondary:hover{background:var(--bg3);color:var(--text)}
 .btn-danger{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}.btn-danger:hover{background:rgba(239,68,68,.25)}
-.btn-success{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3)}
-.btn-amber{background:rgba(245,158,11,.15);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.btn-success{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3)}.btn-success:hover{background:rgba(16,185,129,.25)}
+.btn-amber{background:rgba(245,158,11,.15);color:var(--amber);border:1px solid rgba(245,158,11,.3)}.btn-amber:hover{background:rgba(245,158,11,.25)}
 .btn-sm{padding:5px 11px;font-size:12px}
 .table-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:14px}
@@ -69,12 +65,17 @@ tr:last-child td{border-bottom:none}
 tr:hover td{background:rgba(255,255,255,.02);color:var(--text)}
 .mono{font-family:'JetBrains Mono',monospace;font-size:13px}
 .badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
-.badge-green{background:rgba(16,185,129,.15);color:var(--green)}.badge-amber{background:rgba(245,158,11,.15);color:var(--amber)}.badge-blue{background:rgba(0,212,255,.15);color:var(--accent)}.badge-purple{background:rgba(124,58,237,.15);color:#a78bfa}.badge-red{background:rgba(239,68,68,.15);color:var(--red)}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.badge-green{background:rgba(16,185,129,.15);color:var(--green)}
+.badge-amber{background:rgba(245,158,11,.15);color:var(--amber)}
+.badge-blue{background:rgba(0,212,255,.15);color:var(--accent)}
+.badge-purple{background:rgba(124,58,237,.15);color:#a78bfa}
+.badge-red{background:rgba(239,68,68,.15);color:var(--red)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
 .modal-overlay.open{display:flex}
-.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:28px;width:560px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:var(--shadow)}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:28px;width:520px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:var(--shadow)}
 .modal-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
-.modal-close{cursor:pointer;color:var(--text3);font-size:22px;line-height:1;padding:2px}.modal-close:hover{color:var(--text)}
+.modal-close{cursor:pointer;color:var(--text3);font-size:22px;line-height:1;padding:2px}
+.modal-close:hover{color:var(--text)}
 #toast{position:fixed;bottom:24px;right:24px;z-index:999;display:flex;flex-direction:column;gap:8px}
 .toast-item{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:11px 16px;font-size:13px;color:var(--text);box-shadow:var(--shadow);animation:slideIn .2s ease;display:flex;align-items:center;gap:8px}
 .toast-item.success{border-left:3px solid var(--green)}.toast-item.error{border-left:3px solid var(--red)}
@@ -87,9 +88,11 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text)}
 .sum-item .sum-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
 .sum-item .sum-val{font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace;margin-top:2px}
 .sum-val.green{color:var(--green)}.sum-val.red{color:var(--red)}.sum-val.amber{color:var(--amber)}.sum-val.accent{color:var(--accent)}
+.date-bar{display:flex;align-items:center;gap:12px;margin-bottom:24px}
 .emp-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:10px}
 .emp-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0}
-.emp-avatar.jour{background:rgba(0,212,255,.15);color:var(--accent)}.emp-avatar.nuit{background:rgba(124,58,237,.15);color:#a78bfa}
+.emp-avatar.jour{background:rgba(0,212,255,.15);color:var(--accent)}
+.emp-avatar.nuit{background:rgba(124,58,237,.15);color:#a78bfa}
 .emp-header{display:flex;align-items:center;gap:12px}
 .emp-name{font-weight:600;font-size:15px;color:var(--text)}
 .emp-sites{font-size:12px;color:var(--text3);margin-top:1px}
@@ -105,22 +108,25 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text)}
 .empty-icon{font-size:36px;margin-bottom:10px}
 
 /* ── RECAP MESSAGE ── */
-.recap-box{background:#0d1117;border:1px solid var(--border2);border-radius:10px;padding:18px 20px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.9;color:#c9d1d9;white-space:pre;overflow-x:auto}
+.recap-box{background:#0d1117;border:1px solid var(--border2);border-radius:10px;padding:18px 20px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.9;color:#c9d1d9;white-space:pre;overflow-x:auto;position:relative}
+.recap-copy-btn{position:absolute;top:12px;right:12px}
 
 /* ── TABLEAU MENSUEL ── */
 .mensuel-table th{background:var(--bg3)}
 .mensuel-table tr.today-row td{background:rgba(0,212,255,.08);color:var(--text)}
 .mensuel-table tr.today-row td:first-child{border-left:2px solid var(--accent)}
-.mensuel-table .zero{color:var(--text3)}.mensuel-table .nonzero{color:var(--text);font-weight:500}
+.mensuel-table .zero{color:var(--text3)}
+.mensuel-table .nonzero{color:var(--text);font-weight:500}
 
 /* ── AVS ── */
 .avs-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(245,158,11,.15);color:var(--amber);border:1px solid rgba(245,158,11,.3);border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600}
+
+/* ── RECAP PANEL ── */
 .recap-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
 .recap-panel .emp-select-bar{display:flex;gap:12px;align-items:flex-end;margin-bottom:20px;flex-wrap:wrap}
-.inline-result{font-size:12px;color:var(--green);margin-top:3px;font-family:'JetBrains Mono',monospace}
 
-/* ── ADMIN TAG ── */
-.admin-tag{display:inline-flex;align-items:center;background:rgba(0,212,255,.12);color:var(--accent);border:1px solid rgba(0,212,255,.25);border-radius:6px;padding:2px 8px;font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:600}
+/* Saisie result inline */
+.inline-result{font-size:12px;color:var(--green);margin-top:3px;font-family:'JetBrains Mono',monospace}
 
 @media(max-width:900px){.grid-4{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){.sidebar{width:56px}.sidebar .nav-label,.sidebar .logo-title,.sidebar .logo-sub{display:none}.main{margin-left:56px;padding:16px}.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}.summary-bar{flex-direction:column;gap:12px}}
@@ -129,6 +135,7 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text)}
 <body>
 <div class="app">
 
+<!-- SIDEBAR -->
 <nav class="sidebar">
   <div class="logo">
     <div class="logo-title">💹 Yapson</div>
@@ -177,7 +184,7 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text)}
   </div>
 </div>
 
-<!-- ══ RECAP ══ -->
+<!-- ══ RECAP EMPLOYE ══ -->
 <div id="page-recap" class="page">
   <div class="page-header">
     <div class="page-title">Récap employé</div>
@@ -187,11 +194,7 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text)}
     <div class="emp-select-bar">
       <div class="form-group" style="margin:0;flex:1;min-width:200px">
         <label>Employé</label>
-        <select id="recap-emp-select" onchange="onRecapEmpChange()"><option value="">— Choisir un employé —</option></select>
-      </div>
-      <div class="form-group" style="margin:0;min-width:160px">
-        <label>Site (optionnel)</label>
-        <select id="recap-site-select" onchange="loadRecap()"><option value="">Tous les sites</option></select>
+        <select id="recap-emp-select" onchange="loadRecap()"><option value="">— Choisir un employé —</option></select>
       </div>
       <div class="form-group" style="margin:0">
         <label>Date saisie</label>
@@ -232,13 +235,21 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text)}
     <button class="btn btn-amber" onclick="openAvsModal()">+ Nouvelle AVS</button>
   </div>
   <div class="flex gap-12 mb-16" style="flex-wrap:wrap">
-    <div class="form-group" style="margin:0;flex:1;min-width:180px"><label>Filtrer par employé</label><select id="avs-filter-emp" onchange="loadAvs()"><option value="">Tous les employés</option></select></div>
-    <div class="form-group" style="margin:0;min-width:160px"><label>Mois</label><input type="month" id="avs-filter-mois" onchange="loadAvs()"></div>
+    <div class="form-group" style="margin:0;flex:1;min-width:180px">
+      <label>Filtrer par employé</label>
+      <select id="avs-filter-emp" onchange="loadAvs()"><option value="">Tous les employés</option></select>
+    </div>
+    <div class="form-group" style="margin:0;min-width:160px">
+      <label>Mois</label>
+      <input type="month" id="avs-filter-mois" onchange="loadAvs()">
+    </div>
   </div>
-  <div class="card"><div class="table-wrap">
-    <table><thead><tr><th>Employé</th><th>Mois</th><th>Montant</th><th>Note</th><th>Actions</th></tr></thead>
-    <tbody id="avs-tbody"></tbody></table>
-  </div></div>
+  <div class="card">
+    <div class="table-wrap">
+      <table><thead><tr><th>Employé</th><th>Mois</th><th>Montant</th><th>Note</th><th>Actions</th></tr></thead>
+      <tbody id="avs-tbody"></tbody></table>
+    </div>
+  </div>
 </div>
 
 <!-- ══ HISTORIQUE ══ -->
@@ -291,13 +302,10 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text)}
       </select>
     </div>
     <div class="form-group"><label>% Rémunération sur volume dépôt</label><input id="emp-pct" type="number" step="0.1" value="1.2"></div>
-
-    <!-- Sites affectés avec Admin par site -->
     <div class="form-group">
-      <label style="margin-bottom:10px">Sites affectés & sobriquet Admin <span style="color:var(--red);font-size:11px">(obligatoire par site)</span></label>
-      <div id="emp-sites-blocks"></div>
+      <label>Sites affectés</label>
+      <div id="emp-sites-check" class="checkbox-group"></div>
     </div>
-
     <div class="flex gap-12 justify-between mt-16">
       <button class="btn btn-secondary" onclick="closeModal('modal-emp')">Annuler</button>
       <button class="btn btn-primary" onclick="saveEmploye()">Enregistrer</button>
@@ -328,25 +336,31 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text)}
 const API = '';
 let SITES = [], EMPLOYES = [];
 
+// ── UTILS ──────────────────────────────────────────────────
 function fmt(n){ return new Intl.NumberFormat('fr-FR').format(Math.round(n||0)); }
 function fmtDec(n,d=2){ return new Intl.NumberFormat('fr-FR',{minimumFractionDigits:d,maximumFractionDigits:d}).format(n||0); }
 function today(){ return new Date().toISOString().slice(0,10); }
 function thisMonth(){ return new Date().toISOString().slice(0,7); }
-function fmtDate(s){ if(!s) return ''; const [y,m,d]=s.split('-'); return `${d}/${m}/${y}`; }
+function fmtDate(s){ // YYYY-MM-DD → DD/MM/YYYY
+  if(!s) return '';
+  const [y,m,d] = s.split('-');
+  return `${d}/${m}/${y}`;
+}
+function joursNom(){ return ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi']; }
 
 async function api(method, url, body){
-  const r = await fetch(API+url,{method,headers:{'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
-  if(!r.ok){const e=await r.json().catch(()=>({})); throw new Error(e.error||'Erreur serveur');}
+  const r = await fetch(API+url, {method, headers:{'Content-Type':'application/json'}, body: body ? JSON.stringify(body) : undefined});
+  if(!r.ok){ const e = await r.json().catch(()=>({})); throw new Error(e.error||'Erreur serveur'); }
   return r.json();
 }
 
 function toast(msg, type='success'){
-  const t=document.getElementById('toast');
-  const el=document.createElement('div');
-  el.className=`toast-item ${type}`;
-  el.textContent=(type==='success'?'✅ ':'❌ ')+msg;
+  const t = document.getElementById('toast');
+  const el = document.createElement('div');
+  el.className = `toast-item ${type}`;
+  el.textContent = (type==='success'?'✅ ':'❌ ')+msg;
   t.appendChild(el);
-  setTimeout(()=>el.remove(),3500);
+  setTimeout(()=>el.remove(), 3500);
 }
 
 function showPage(page){
@@ -357,45 +371,51 @@ function showPage(page){
   if(page==='sites') loadSites();
   else if(page==='employes') loadEmployes();
   else if(page==='saisie') initSaisie();
-  else if(page==='dashboard'){document.getElementById('db-date').value=today(); loadDashboard();}
+  else if(page==='dashboard'){ document.getElementById('db-date').value=today(); loadDashboard(); }
   else if(page==='recap') initRecap();
   else if(page==='avs') initAvs();
 }
 
-function openModal(id){document.getElementById(id).classList.add('open');}
-function closeModal(id){document.getElementById(id).classList.remove('open');}
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 
 // ── SITES ──────────────────────────────────────────────────
 async function loadSites(){
   SITES = await api('GET','/api/sites');
-  const tbody=document.getElementById('sites-tbody');
-  if(!SITES.length){tbody.innerHTML='<tr><td colspan="4"><div class="empty-state"><div class="empty-icon">🏢</div>Aucun site</div></td></tr>';return;}
-  tbody.innerHTML=SITES.map(s=>`<tr>
-    <td><strong style="color:var(--text)">${s.nom}</strong></td>
-    <td><span class="badge badge-green">${fmtDec(s.depot_pct)}%</span></td>
-    <td><span class="badge badge-amber">${fmtDec(s.retrait_pct)}%</span></td>
-    <td style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn btn-sm btn-secondary" onclick="editSite(${s.id})">✏️ Modifier</button>
-      <button class="btn btn-sm btn-danger" onclick="deleteSite(${s.id})">🗑</button>
-    </td>
-  </tr>`).join('');
+  const tbody = document.getElementById('sites-tbody');
+  if(!SITES.length){ tbody.innerHTML='<tr><td colspan="4"><div class="empty-state"><div class="empty-icon">🏢</div>Aucun site</div></td></tr>'; return; }
+  tbody.innerHTML = SITES.map(s=>`
+    <tr>
+      <td><strong style="color:var(--text)">${s.nom}</strong></td>
+      <td><span class="badge badge-green">${fmtDec(s.depot_pct)}%</span></td>
+      <td><span class="badge badge-amber">${fmtDec(s.retrait_pct)}%</span></td>
+      <td style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-sm btn-secondary" onclick="editSite(${s.id})">✏️ Modifier</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteSite(${s.id})">🗑</button>
+      </td>
+    </tr>`).join('');
 }
 
 function openSiteModal(site=null){
-  document.getElementById('site-edit-id').value=site?site.id:'';
-  document.getElementById('modal-site-title').textContent=site?'Modifier le site':'Nouveau site';
-  document.getElementById('site-nom').value=site?site.nom:'';
-  document.getElementById('site-depot-pct').value=site?site.depot_pct:4;
-  document.getElementById('site-retrait-pct').value=site?site.retrait_pct:2;
+  document.getElementById('site-edit-id').value = site?site.id:'';
+  document.getElementById('modal-site-title').textContent = site?'Modifier le site':'Nouveau site';
+  document.getElementById('site-nom').value = site?site.nom:'';
+  document.getElementById('site-depot-pct').value = site?site.depot_pct:4;
+  document.getElementById('site-retrait-pct').value = site?site.retrait_pct:2;
   openModal('modal-site');
 }
-function editSite(id){openSiteModal(SITES.find(s=>s.id===id));}
+function editSite(id){ openSiteModal(SITES.find(s=>s.id===id)); }
+
 async function saveSite(){
-  const id=document.getElementById('site-edit-id').value;
-  const data={nom:document.getElementById('site-nom').value,depot_pct:+document.getElementById('site-depot-pct').value,retrait_pct:+document.getElementById('site-retrait-pct').value};
-  try{if(id) await api('PUT',`/api/sites/${id}`,data); else await api('POST','/api/sites',data); toast('Site enregistré'); closeModal('modal-site'); loadSites();}
-  catch(e){toast(e.message,'error');}
+  const id = document.getElementById('site-edit-id').value;
+  const data = {nom:document.getElementById('site-nom').value, depot_pct:+document.getElementById('site-depot-pct').value, retrait_pct:+document.getElementById('site-retrait-pct').value};
+  try{
+    if(id) await api('PUT',`/api/sites/${id}`,data);
+    else await api('POST','/api/sites',data);
+    toast('Site enregistré'); closeModal('modal-site'); loadSites();
+  }catch(e){ toast(e.message,'error'); }
 }
+
 async function deleteSite(id){
   if(!confirm('Supprimer ce site ?')) return;
   await api('DELETE',`/api/sites/${id}`); toast('Site supprimé'); loadSites();
@@ -403,26 +423,18 @@ async function deleteSite(id){
 
 // ── EMPLOYES ──────────────────────────────────────────────
 async function loadEmployes(){
-  SITES=await api('GET','/api/sites');
-  EMPLOYES=await api('GET','/api/employes');
-  const grid=document.getElementById('employes-grid');
-  if(!EMPLOYES.length){grid.innerHTML='<div class="empty-state"><div class="empty-icon">👥</div>Aucun employé</div>';return;}
-  grid.innerHTML=EMPLOYES.map(e=>{
-    const initials=(e.prenom[0]+e.nom[0]).toUpperCase();
-    const empSites=(e.sites||[]).map(sid=>SITES.find(s=>s.id===sid)).filter(Boolean);
-    const adminLabels=e.admin_labels||{};
-    const sitesHtml=empSites.map(s=>`
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)">
-        <span style="font-size:12px;color:var(--text3)">${s.nom}</span>
-        <span class="admin-tag">${adminLabels[s.id]||'—'}</span>
-      </div>`).join('');
+  SITES = await api('GET','/api/sites');
+  EMPLOYES = await api('GET','/api/employes');
+  const grid = document.getElementById('employes-grid');
+  if(!EMPLOYES.length){ grid.innerHTML='<div class="empty-state"><div class="empty-icon">👥</div>Aucun employé</div>'; return; }
+  grid.innerHTML = EMPLOYES.map(e=>{
+    const initials = (e.prenom[0]+e.nom[0]).toUpperCase();
+    const empSites = (e.sites||[]).map(sid=>SITES.find(s=>s.id===sid)?.nom).filter(Boolean);
     return `<div class="emp-card">
       <div class="emp-header">
         <div class="emp-avatar ${e.type_shift}">${initials}</div>
-        <div><div class="emp-name">${e.prenom} ${e.nom}</div>
-          <div class="emp-sites">${empSites.map(s=>s.nom).join(', ')||'Aucun site'}</div></div>
+        <div><div class="emp-name">${e.prenom} ${e.nom}</div><div class="emp-sites">${empSites.join(', ')||'Aucun site'}</div></div>
       </div>
-      ${empSites.length?`<div style="margin-top:2px">${sitesHtml}</div>`:''}
       <div class="flex justify-between items-center">
         <span class="badge ${e.type_shift==='nuit'?'badge-purple':'badge-blue'}">${e.type_shift==='nuit'?'🌙 Nuit':'☀️ Journée'}</span>
         <span style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--green);font-weight:600">${fmtDec(e.pct_depot)}%</span>
@@ -435,108 +447,32 @@ async function loadEmployes(){
   }).join('');
 }
 
-function buildSiteBlocks(selectedSites=[], adminLabels={}){
-  // selectedSites = array of site_id (numbers)
-  const container=document.getElementById('emp-sites-blocks');
-  container.innerHTML=SITES.map(site=>{
-    const checked=selectedSites.includes(site.id);
-    const label=adminLabels[site.id]||'';
-    return `<div class="site-aff-block${checked?' active':''}" id="sab-${site.id}">
-      <div class="site-aff-header">
-        <input type="checkbox" id="sc-${site.id}" value="${site.id}" ${checked?'checked':''} onchange="toggleSiteBlock(${site.id},this.checked)">
-        <label for="sc-${site.id}" class="site-aff-label">${site.nom}</label>
-        <span class="badge badge-green" style="font-size:10px">${fmtDec(site.depot_pct)}% dépôt</span>
-      </div>
-      <div class="site-aff-fields" id="safields-${site.id}" style="display:${checked?'block':'none'}">
-        <label>Sobriquet Admin sur ce site <span style="color:var(--red)">*</span></label>
-        <div class="admin-input-wrap">
-          <span class="admin-prefix">Admin_</span>
-          <input class="admin-input" id="admin-${site.id}" placeholder="ex: Brown" value="${label.replace(/^Admin_/i,'')}" oninput="syncAdminLabel(${site.id})">
-        </div>
-        <div id="admin-err-${site.id}" style="font-size:11px;color:var(--red);margin-top:3px;display:none">Le sobriquet est obligatoire</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function toggleSiteBlock(siteId, checked){
-  const block=document.getElementById(`sab-${siteId}`);
-  const fields=document.getElementById(`safields-${siteId}`);
-  block.classList.toggle('active',checked);
-  fields.style.display=checked?'block':'none';
-  if(!checked){
-    const inp=document.getElementById(`admin-${siteId}`);
-    if(inp) inp.classList.remove('input-error');
-    const err=document.getElementById(`admin-err-${siteId}`);
-    if(err) err.style.display='none';
-  }
-}
-
-function syncAdminLabel(siteId){
-  const inp=document.getElementById(`admin-${siteId}`);
-  if(!inp) return;
-  const err=document.getElementById(`admin-err-${siteId}`);
-  if(inp.value.trim()){
-    inp.classList.remove('input-error');
-    if(err) err.style.display='none';
-  }
-}
-
 function openEmpModal(emp=null){
-  document.getElementById('emp-edit-id').value=emp?emp.id:'';
-  document.getElementById('modal-emp-title').textContent=emp?'Modifier employé':'Nouvel employé';
-  document.getElementById('emp-prenom').value=emp?emp.prenom:'';
-  document.getElementById('emp-nom').value=emp?emp.nom:'';
-  document.getElementById('emp-shift').value=emp?emp.type_shift:'jour';
-  document.getElementById('emp-pct').value=emp?emp.pct_depot:1.2;
-  const selectedSites=emp?(emp.sites||[]).map(Number):[];
-  const adminLabels=emp?(emp.admin_labels||{}):{};
-  buildSiteBlocks(selectedSites, adminLabels);
+  document.getElementById('emp-edit-id').value = emp?emp.id:'';
+  document.getElementById('modal-emp-title').textContent = emp?'Modifier employé':'Nouvel employé';
+  document.getElementById('emp-prenom').value = emp?emp.prenom:'';
+  document.getElementById('emp-nom').value = emp?emp.nom:'';
+  document.getElementById('emp-shift').value = emp?emp.type_shift:'jour';
+  document.getElementById('emp-pct').value = emp?emp.pct_depot:1.2;
+  const empSites = emp?(emp.sites||[]):[];
+  document.getElementById('emp-sites-check').innerHTML = SITES.map(s=>`
+    <label class="checkbox-item ${empSites.includes(s.id)?'checked':''}" id="citem-${s.id}">
+      <input type="checkbox" value="${s.id}" ${empSites.includes(s.id)?'checked':''} onchange="document.getElementById('citem-${s.id}').classList.toggle('checked',this.checked)"> ${s.nom}
+    </label>`).join('');
   openModal('modal-emp');
 }
-
-function editEmploye(id){openEmpModal(EMPLOYES.find(e=>e.id===id));}
-function updateEmpPct(){document.getElementById('emp-pct').value=document.getElementById('emp-shift').value==='nuit'?1.5:1.2;}
+function editEmploye(id){ openEmpModal(EMPLOYES.find(e=>e.id===id)); }
+function updateEmpPct(){ document.getElementById('emp-pct').value = document.getElementById('emp-shift').value==='nuit'?1.5:1.2; }
 
 async function saveEmploye(){
-  // Collecte sites cochés
-  const checkedSites=[...document.querySelectorAll('#emp-sites-blocks input[type=checkbox]:checked')].map(i=>+i.value);
-
-  // Validation : chaque site coché doit avoir un admin_label
-  let valid=true;
-  checkedSites.forEach(sid=>{
-    const inp=document.getElementById(`admin-${sid}`);
-    const err=document.getElementById(`admin-err-${sid}`);
-    if(!inp||!inp.value.trim()){
-      valid=false;
-      if(inp) inp.classList.add('input-error');
-      if(err) err.style.display='block';
-    }
-  });
-  if(!valid){toast('Renseignez le sobriquet Admin pour chaque site coché','error'); return;}
-
-  // Construire admin_labels avec préfixe Admin_
-  const admin_labels={};
-  checkedSites.forEach(sid=>{
-    const inp=document.getElementById(`admin-${sid}`);
-    const raw=inp.value.trim();
-    // On stocke avec préfixe Admin_ (on évite Admin_Admin_)
-    admin_labels[sid]=raw.toLowerCase().startsWith('admin_')?raw:`Admin_${raw}`;
-  });
-
-  const id=document.getElementById('emp-edit-id').value;
-  const data={
-    prenom:document.getElementById('emp-prenom').value,
-    nom:document.getElementById('emp-nom').value,
-    type_shift:document.getElementById('emp-shift').value,
-    pct_depot:+document.getElementById('emp-pct').value,
-    sites:checkedSites,
-    admin_labels
-  };
+  const id = document.getElementById('emp-edit-id').value;
+  const sites = [...document.querySelectorAll('#emp-sites-check input:checked')].map(i=>+i.value);
+  const data = {prenom:document.getElementById('emp-prenom').value, nom:document.getElementById('emp-nom').value, type_shift:document.getElementById('emp-shift').value, pct_depot:+document.getElementById('emp-pct').value, sites};
   try{
-    if(id) await api('PUT',`/api/employes/${id}`,data); else await api('POST','/api/employes',data);
+    if(id) await api('PUT',`/api/employes/${id}`,data);
+    else await api('POST','/api/employes',data);
     toast('Employé enregistré'); closeModal('modal-emp'); loadEmployes();
-  }catch(e){toast(e.message,'error');}
+  }catch(e){ toast(e.message,'error'); }
 }
 
 async function deleteEmploye(id){
@@ -546,24 +482,26 @@ async function deleteEmploye(id){
 
 // ── SAISIE ────────────────────────────────────────────────
 async function initSaisie(){
-  SITES=await api('GET','/api/sites');
-  EMPLOYES=await api('GET','/api/employes');
-  document.getElementById('saisie-date').value=today();
+  SITES = await api('GET','/api/sites');
+  EMPLOYES = await api('GET','/api/employes');
+  document.getElementById('saisie-date').value = today();
   renderSaisieVolumes();
 }
 
 async function renderSaisieVolumes(){
-  const date=document.getElementById('saisie-date').value;
-  const sessions=date?await api('GET',`/api/sessions?date=${date}`):[];
-  document.getElementById('sites-saisie-grid').innerHTML=SITES.map(site=>{
-    const sess=sessions.find(s=>s.site_id===site.id)||{};
+  const date = document.getElementById('saisie-date').value;
+  const sessions = date ? await api('GET',`/api/sessions?date=${date}`) : [];
+  document.getElementById('sites-saisie-grid').innerHTML = SITES.map(site=>{
+    const sess = sessions.find(s=>s.site_id===site.id)||{};
     return `<div class="site-card">
       <div class="site-name">${site.nom}</div>
       <div class="site-pct">Dépôt: <strong>${fmtDec(site.depot_pct)}%</strong> · Retrait: <strong>${fmtDec(site.retrait_pct)}%</strong></div>
       <div class="form-group"><label>Volume dépôt (FCFA)</label>
-        <input type="number" id="vd-${site.id}" value="${sess.volume_depot||''}" placeholder="0" oninput="calcSite(${site.id},${site.depot_pct},${site.retrait_pct})"></div>
+        <input type="number" id="vd-${site.id}" value="${sess.volume_depot||''}" placeholder="0" oninput="calcSite(${site.id},${site.depot_pct},${site.retrait_pct})">
+      </div>
       <div class="form-group" style="margin-bottom:0"><label>Volume retrait (FCFA)</label>
-        <input type="number" id="vr-${site.id}" value="${sess.volume_retrait||''}" placeholder="0" oninput="calcSite(${site.id},${site.depot_pct},${site.retrait_pct})"></div>
+        <input type="number" id="vr-${site.id}" value="${sess.volume_retrait||''}" placeholder="0" oninput="calcSite(${site.id},${site.depot_pct},${site.retrait_pct})">
+      </div>
       <div class="result-row"><span style="color:var(--text3)">Commission dépôt</span><span class="mono" style="color:var(--green)" id="cdep-${site.id}">${fmt(sess.commission_depot||0)} FCFA</span></div>
       <div class="result-row"><span style="color:var(--text3)">Commission retrait</span><span class="mono" style="color:var(--green)" id="cret-${site.id}">${fmt(sess.commission_retrait||0)} FCFA</span></div>
       <div class="result-row" style="border-top:1px solid rgba(0,212,255,.3)"><span style="font-weight:600;color:var(--text)">Total</span><span class="mono" style="color:var(--accent);font-size:14px;font-weight:700" id="ctot-${site.id}">${fmt(sess.total_commission||0)} FCFA</span></div>
@@ -571,37 +509,35 @@ async function renderSaisieVolumes(){
   }).join('');
 }
 
-function calcSite(sid,dp,rp){
-  const d=+document.getElementById(`vd-${sid}`).value||0;
-  const r=+document.getElementById(`vr-${sid}`).value||0;
-  document.getElementById(`cdep-${sid}`).textContent=fmt(d*dp/100)+' FCFA';
-  document.getElementById(`cret-${sid}`).textContent=fmt(r*rp/100)+' FCFA';
-  document.getElementById(`ctot-${sid}`).textContent=fmt(d*dp/100+r*rp/100)+' FCFA';
+function calcSite(sid, dp, rp){
+  const d = +document.getElementById(`vd-${sid}`).value||0;
+  const r = +document.getElementById(`vr-${sid}`).value||0;
+  document.getElementById(`cdep-${sid}`).textContent = fmt(d*dp/100)+' FCFA';
+  document.getElementById(`cret-${sid}`).textContent = fmt(r*rp/100)+' FCFA';
+  document.getElementById(`ctot-${sid}`).textContent = fmt(d*dp/100+r*rp/100)+' FCFA';
 }
 
 async function saveTousVolumes(){
-  const date=document.getElementById('saisie-date').value;
+  const date = document.getElementById('saisie-date').value;
   if(!date) return toast('Sélectionnez une date','error');
   for(const site of SITES){
-    const vd=document.getElementById(`vd-${site.id}`)?.value;
-    const vr=document.getElementById(`vr-${site.id}`)?.value;
-    if(vd!==undefined) await api('POST','/api/sessions',{date,site_id:site.id,volume_depot:+vd||0,volume_retrait:+vr||0});
+    const vd = document.getElementById(`vd-${site.id}`)?.value;
+    const vr = document.getElementById(`vr-${site.id}`)?.value;
+    if(vd!==undefined) await api('POST','/api/sessions',{date, site_id:site.id, volume_depot:+vd||0, volume_retrait:+vr||0});
   }
   toast(`${SITES.length} site(s) enregistré(s)`);
 }
 
 async function renderSaisiePerfs(){
-  const date=document.getElementById('saisie-date').value;
-  const perfs=date?await api('GET',`/api/performances?date=${date}`):[];
-  document.getElementById('employes-saisie-grid').innerHTML=EMPLOYES.map(emp=>{
-    const empSites=(emp.sites||[]).map(sid=>SITES.find(s=>s.id===sid)).filter(Boolean);
-    const adminLabels=emp.admin_labels||{};
-    const initials=(emp.prenom[0]+emp.nom[0]).toUpperCase();
-    const sitesIn=empSites.map(site=>{
-      const perf=perfs.find(p=>p.employe_id===emp.id&&p.site_id===site.id)||{};
-      const adminLabel=adminLabels[site.id]||`Admin_${emp.nom}`;
+  const date = document.getElementById('saisie-date').value;
+  const perfs = date ? await api('GET',`/api/performances?date=${date}`) : [];
+  document.getElementById('employes-saisie-grid').innerHTML = EMPLOYES.map(emp=>{
+    const empSites = (emp.sites||[]).map(sid=>SITES.find(s=>s.id===sid)).filter(Boolean);
+    const initials = (emp.prenom[0]+emp.nom[0]).toUpperCase();
+    const sitesIn = empSites.map(site=>{
+      const perf = perfs.find(p=>p.employe_id===emp.id&&p.site_id===site.id)||{};
       return `<div style="margin-bottom:10px">
-        <label style="color:var(--accent);font-size:12px">📍 ${site.nom} <span class="admin-tag" style="margin-left:4px">${adminLabel}</span></label>
+        <label style="color:var(--accent);font-size:12px">📍 ${site.nom}</label>
         <input type="number" id="perf-${emp.id}-${site.id}" value="${perf.volume_depot||''}" placeholder="Volume dépôt confirmé"
           oninput="calcEmpPerf(${emp.id},${site.id},${emp.pct_depot})">
         <div class="inline-result" id="pres-${emp.id}-${site.id}">→ ${fmt(perf.remuneration||0)} FCFA</div>
@@ -618,20 +554,20 @@ async function renderSaisiePerfs(){
   }).join('');
 }
 
-function calcEmpPerf(eid,sid,pct){
-  const v=+document.getElementById(`perf-${eid}-${sid}`)?.value||0;
-  document.getElementById(`pres-${eid}-${sid}`).textContent=`→ ${fmt(v*pct/100)} FCFA`;
+function calcEmpPerf(eid, sid, pct){
+  const v = +document.getElementById(`perf-${eid}-${sid}`)?.value||0;
+  document.getElementById(`pres-${eid}-${sid}`).textContent = `→ ${fmt(v*pct/100)} FCFA`;
 }
 
 async function saveToutesPerfs(){
-  const date=document.getElementById('saisie-date').value;
+  const date = document.getElementById('saisie-date').value;
   if(!date) return toast('Sélectionnez une date','error');
   let ok=0;
   for(const emp of EMPLOYES){
     for(const sid of (emp.sites||[])){
-      const inp=document.getElementById(`perf-${emp.id}-${sid}`);
-      if(inp&&inp.value!==''){
-        await api('POST','/api/performances',{date,employe_id:emp.id,site_id:sid,volume_depot:+inp.value||0});
+      const inp = document.getElementById(`perf-${emp.id}-${sid}`);
+      if(inp && inp.value!==''){
+        await api('POST','/api/performances',{date, employe_id:emp.id, site_id:sid, volume_depot:+inp.value||0});
         ok++;
       }
     }
@@ -640,105 +576,79 @@ async function saveToutesPerfs(){
 }
 
 function switchTab(tab){
-  document.getElementById('tab-volumes').classList.toggle('active',tab==='volumes');
-  document.getElementById('tab-perfs').classList.toggle('active',tab==='perfs');
-  document.getElementById('saisie-volumes').style.display=tab==='volumes'?'':'none';
-  document.getElementById('saisie-perfs-wrap').style.display=tab==='perfs'?'':'none';
+  document.getElementById('tab-volumes').classList.toggle('active', tab==='volumes');
+  document.getElementById('tab-perfs').classList.toggle('active', tab==='perfs');
+  document.getElementById('saisie-volumes').style.display = tab==='volumes'?'':'none';
+  document.getElementById('saisie-perfs-wrap').style.display = tab==='perfs'?'':'none';
   if(tab==='perfs') renderSaisiePerfs();
 }
 
-// ── RECAP ─────────────────────────────────────────────────
+// ── RECAP EMPLOYE ─────────────────────────────────────────
 async function initRecap(){
-  EMPLOYES=await api('GET','/api/employes');
-  SITES=await api('GET','/api/sites');
-  const sel=document.getElementById('recap-emp-select');
-  sel.innerHTML='<option value="">— Choisir un employé —</option>'+EMPLOYES.map(e=>`<option value="${e.id}">${e.prenom} ${e.nom}</option>`).join('');
-  document.getElementById('recap-date').value=today();
-  document.getElementById('recap-site-select').innerHTML='<option value="">Tous les sites</option>';
-}
-
-function onRecapEmpChange(){
-  const empId=+document.getElementById('recap-emp-select').value;
-  const emp=EMPLOYES.find(e=>e.id===empId);
-  const sel=document.getElementById('recap-site-select');
-  sel.innerHTML='<option value="">Tous les sites</option>';
-  if(emp){
-    (emp.sites||[]).forEach(sid=>{
-      const site=SITES.find(s=>s.id===sid);
-      if(site){
-        const opt=document.createElement('option');
-        opt.value=sid; opt.textContent=site.nom;
-        sel.appendChild(opt);
-      }
-    });
-  }
-  loadRecap();
+  EMPLOYES = await api('GET','/api/employes');
+  SITES = await api('GET','/api/sites');
+  const sel = document.getElementById('recap-emp-select');
+  sel.innerHTML = '<option value="">— Choisir un employé —</option>' +
+    EMPLOYES.map(e=>`<option value="${e.id}">${e.prenom} ${e.nom}</option>`).join('');
+  document.getElementById('recap-date').value = today();
 }
 
 async function loadRecap(){
-  const empId=document.getElementById('recap-emp-select').value;
-  const date=document.getElementById('recap-date').value;
-  if(!empId||!date) return;
-  const siteId=document.getElementById('recap-site-select').value;
-  const url=siteId?`/api/recap/${empId}?date=${date}&site_id=${siteId}`:`/api/recap/${empId}?date=${date}`;
+  const empId = document.getElementById('recap-emp-select').value;
+  const date = document.getElementById('recap-date').value;
+  if(!empId || !date) return;
   try{
-    const data=await api('GET',url);
+    const data = await api('GET',`/api/recap/${empId}?date=${date}`);
     renderRecap(data);
-  }catch(e){toast(e.message,'error');}
+  }catch(e){ toast(e.message,'error'); }
 }
 
 function renderRecap(data){
-  const {employe:emp, date, mois, admin_label, jour, mensuel}=data;
-  const adminLabels=emp.admin_labels||{};
-  const empSites=(emp.sites||[]).map(sid=>SITES.find(s=>s.id===sid)).filter(Boolean);
+  const { employe: emp, date, mois, jour, mensuel } = data;
+  const empSites = (emp.sites||[]).map(sid=>SITES.find(s=>s.id===sid)?.nom).filter(Boolean);
 
-  // ── Construire le message ──
-  const dateLabel=fmtDate(date);
-  const [yr,mo]=mois.split('-').map(Number);
-  const moisNoms=['','Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
-  const moisLabel=`${moisNoms[mo]} ${yr}`;
+  // ── Message à copier (format vu sur la capture) ──
+  const dateLabel = fmtDate(date);
+  const [yr, mo] = mois.split('-').map(Number);
+  const moisNoms = ['','Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  const moisLabel = `${moisNoms[mo]} ${yr}`;
 
-  let msgLines=[];
+  let msgLines = [];
+  msgLines.push(`Admin_${emp.nom.toUpperCase()}`);
+  msgLines.push(`Date:         ${dateLabel}`);
 
-  if(jour.par_site.length>1){
-    // Multi-sites : un bloc par site
+  // Par site si plusieurs
+  if(jour.par_site.length > 1){
     jour.par_site.forEach(s=>{
-      msgLines.push(`${s.admin_label}`);
-      msgLines.push(`Date:         ${dateLabel}`);
+      msgLines.push(`──────────────`);
+      msgLines.push(`Site: ${s.site_nom}`);
       msgLines.push(`Total:        ${fmt(s.volume)} FCFA`);
       msgLines.push(`Commission:   ${fmt(Math.round(s.commission))} FCFA`);
-      msgLines.push(`──────────────`);
     });
-    msgLines.push(`GRAND TOTAL`);
-    msgLines.push(`Total:        ${fmt(jour.total_volume)} FCFA`);
-    msgLines.push(`Commission:   ${fmt(jour.total_commission)} FCFA`);
-  } else {
-    // Site unique
-    msgLines.push(`${admin_label}`);
-    msgLines.push(`Date:         ${dateLabel}`);
-    msgLines.push(`Total:        ${fmt(jour.total_volume)} FCFA`);
-    msgLines.push(`Commission:   ${fmt(jour.total_commission)} FCFA`);
+    msgLines.push(`══════════════`);
   }
 
-  msgLines.push(``);
+  msgLines.push(`Total:        ${fmt(jour.total_volume)} FCFA`);
+  msgLines.push(`Commission:   ${fmt(jour.total_commission)} FCFA`);
   msgLines.push(`AVS:          ${fmt(mensuel.avs)} FCFA`);
   msgLines.push(`Total mois:   ${fmt(mensuel.grand_total)} FCFA`);
   msgLines.push(``);
   msgLines.push(`GRAND TOTAL`);
   msgLines.push(`${fmt(mensuel.grand_total)} FCFA`);
-  if(mensuel.avs>0){
+  if(mensuel.avs > 0){
     msgLines.push(``);
     msgLines.push(`NET À PERCEVOIR`);
     msgLines.push(`${fmt(mensuel.net)} FCFA`);
   }
-  const msgText=msgLines.join('\n');
+
+  const msgText = msgLines.join('\n');
 
   // ── Tableau mensuel ──
-  const joursRows=mensuel.jours.map(j=>{
-    const isToday=j.date===date;
-    const cls=isToday?'today-row':'';
-    const vCls=j.volume>0?'nonzero':'zero';
-    const cCls=j.commission>0?'nonzero':'zero';
+  const joursRows = mensuel.jours.map(j=>{
+    const isToday = j.date === date;
+    const cls = isToday ? 'today-row' : '';
+    const vCls = j.volume > 0 ? 'nonzero' : 'zero';
+    const cCls = j.commission > 0 ? 'nonzero' : 'zero';
     return `<tr class="${cls}">
       <td style="color:var(--text3);font-size:12px">${j.jour}</td>
       <td class="mono" style="font-size:12px">${fmtDate(j.date)}</td>
@@ -747,52 +657,43 @@ function renderRecap(data){
     </tr>`;
   }).join('');
 
-  const avsHtml=mensuel.avs_details.length?`
+  // AVS details
+  const avsHtml = mensuel.avs_details.length ? `
     <div style="margin-top:12px">
-      <div class="card-title">AVS — ${moisLabel}</div>
+      <div class="card-title">Avances sur salaire — ${moisLabel}</div>
       ${mensuel.avs_details.map(a=>`
-        <div class="flex justify-between items-center" style="padding:5px 0;border-bottom:1px solid var(--border);font-size:13px">
+        <div class="flex justify-between items-center" style="padding:6px 0;border-bottom:1px solid var(--border);font-size:13px">
           <span style="color:var(--text2)">${a.note||'Avance'}</span>
           <span class="avs-badge">-${fmt(a.montant)} FCFA</span>
         </div>`).join('')}
-      <div class="flex justify-between items-center" style="padding:7px 0;font-size:14px;font-weight:600">
+      <div class="flex justify-between items-center" style="padding:8px 0;font-size:14px;font-weight:600">
         <span style="color:var(--text)">Total AVS</span>
         <span style="color:var(--amber);font-family:'JetBrains Mono',monospace">-${fmt(mensuel.avs)} FCFA</span>
       </div>
-    </div>`:'';
+    </div>` : '';
 
-  // Sobriquets affichés
-  const adminBadgesHtml=empSites.map(s=>`
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border)">
-      <span style="font-size:12px;color:var(--text3)">${s.nom}</span>
-      <span class="admin-tag">${adminLabels[s.id]||'—'}</span>
-    </div>`).join('');
-
-  document.getElementById('recap-content').innerHTML=`
+  document.getElementById('recap-content').innerHTML = `
     <div class="grid-2" style="gap:20px;align-items:start">
 
+      <!-- Colonne gauche: résumé + message -->
       <div style="display:flex;flex-direction:column;gap:16px">
-
-        <!-- Infos employé + sobriquets -->
-        <div class="card">
-          <div class="card-title">👤 ${emp.prenom} ${emp.nom} — Sobriquets Admin</div>
-          ${adminBadgesHtml||'<span style="color:var(--text3);font-size:13px">Aucun site affecté</span>'}
-        </div>
 
         <!-- Résumé du jour -->
         <div class="card">
-          <div class="card-title">📅 ${dateLabel}</div>
+          <div class="card-title">📅 ${dateLabel} — ${emp.prenom} ${emp.nom}</div>
           ${jour.par_site.length>1?`
             ${jour.par_site.map(s=>`
               <div style="background:var(--bg3);border-radius:8px;padding:10px 14px;margin-bottom:8px">
-                <div class="flex justify-between items-center" style="margin-bottom:6px">
-                  <span style="font-size:12px;color:var(--accent);font-weight:600">📍 ${s.site_nom}</span>
-                  <span class="admin-tag">${s.admin_label}</span>
+                <div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:6px">📍 ${s.site_nom}</div>
+                <div class="flex justify-between" style="font-size:13px">
+                  <span style="color:var(--text3)">Volume</span><span class="mono">${fmt(s.volume)} FCFA</span>
                 </div>
-                <div class="flex justify-between" style="font-size:13px"><span style="color:var(--text3)">Volume</span><span class="mono">${fmt(s.volume)} FCFA</span></div>
-                <div class="flex justify-between" style="font-size:13px"><span style="color:var(--text3)">Commission</span><span class="mono" style="color:var(--green)">${fmt(Math.round(s.commission))} FCFA</span></div>
+                <div class="flex justify-between" style="font-size:13px">
+                  <span style="color:var(--text3)">Commission</span><span class="mono" style="color:var(--green)">${fmt(Math.round(s.commission))} FCFA</span>
+                </div>
               </div>`).join('')}
-            <div class="divider"></div>`:''}
+            <div class="divider"></div>
+          `:''}
           <div class="flex justify-between" style="font-size:14px;padding:4px 0">
             <span style="color:var(--text2)">Total volume</span>
             <span class="mono" style="font-weight:600">${fmt(jour.total_volume)} FCFA</span>
@@ -803,9 +704,9 @@ function renderRecap(data){
           </div>
         </div>
 
-        <!-- Bilan mensuel -->
+        <!-- Résumé mensuel -->
         <div class="card">
-          <div class="card-title">📆 ${moisLabel}</div>
+          <div class="card-title">📆 ${moisLabel} — Bilan mensuel</div>
           <div class="flex justify-between" style="font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)">
             <span style="color:var(--text2)">Total commissions mois</span>
             <span class="mono" style="color:var(--green)">${fmt(mensuel.grand_total)} FCFA</span>
@@ -818,7 +719,7 @@ function renderRecap(data){
             <span style="font-weight:600;color:var(--text)">GRAND TOTAL</span>
             <span class="mono" style="color:var(--accent);font-weight:700;font-size:17px">${fmt(mensuel.grand_total)} FCFA</span>
           </div>
-          ${mensuel.avs>0?`<div class="flex justify-between" style="font-size:14px;padding:4px 0">
+          ${mensuel.avs>0?`<div class="flex justify-between" style="font-size:14px;padding:4px 0;margin-top:2px">
             <span style="color:var(--text)">Net à percevoir</span>
             <span class="mono" style="color:${mensuel.net>=0?'var(--green)':'var(--red)'};font-weight:700">${fmt(mensuel.net)} FCFA</span>
           </div>`:''}
@@ -827,23 +728,32 @@ function renderRecap(data){
 
         <!-- Message à copier -->
         <div class="card">
-          <div class="card-title flex justify-between items-center" style="display:flex;justify-content:space-between;align-items:center">
+          <div class="card-title flex justify-between items-center">
             <span>💬 Message à envoyer</span>
-            <button class="btn btn-primary btn-sm" onclick="copyRecap()">📋 Copier</button>
           </div>
-          <div class="recap-box" id="recap-msg-box">${msgText}</div>
+          <div style="position:relative">
+            <div class="recap-box" id="recap-msg-box">${msgText}</div>
+            <button class="btn btn-primary btn-sm" style="position:absolute;top:10px;right:10px" onclick="copyRecap()">📋 Copier</button>
+          </div>
         </div>
       </div>
 
-      <!-- Tableau mensuel -->
+      <!-- Colonne droite: tableau mensuel -->
       <div class="card">
-        <div class="card-title flex justify-between items-center" style="display:flex;justify-content:space-between;align-items:center">
-          <span>📊 ${moisLabel}</span>
+        <div class="card-title flex justify-between items-center">
+          <span>📊 Détail mensuel — ${moisLabel}</span>
           <div class="avs-badge">GRAND TOTAL: ${fmt(mensuel.grand_total)} FCFA</div>
         </div>
         <div class="table-wrap">
           <table class="mensuel-table">
-            <thead><tr><th>Jour</th><th>Date</th><th style="text-align:right">Total</th><th style="text-align:right">Commissions</th></tr></thead>
+            <thead>
+              <tr>
+                <th>Jour</th>
+                <th>Date</th>
+                <th style="text-align:right">Total</th>
+                <th style="text-align:right">Commissions</th>
+              </tr>
+            </thead>
             <tbody>${joursRows}</tbody>
             <tfoot>
               <tr style="border-top:2px solid var(--border2)">
@@ -865,36 +775,37 @@ function renderRecap(data){
           </table>
         </div>
       </div>
+
     </div>`;
 }
 
 function copyRecap(){
-  const txt=document.getElementById('recap-msg-box').textContent;
+  const txt = document.getElementById('recap-msg-box').textContent;
   navigator.clipboard.writeText(txt).then(()=>toast('Message copié !')).catch(()=>{
-    const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast('Message copié !');
+    const ta = document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast('Message copié !');
   });
 }
 
 // ── AVS ───────────────────────────────────────────────────
 async function initAvs(){
-  EMPLOYES=await api('GET','/api/employes');
-  const sel=document.getElementById('avs-filter-emp');
-  sel.innerHTML='<option value="">Tous les employés</option>'+EMPLOYES.map(e=>`<option value="${e.id}">${e.prenom} ${e.nom}</option>`).join('');
-  document.getElementById('avs-filter-mois').value=thisMonth();
+  EMPLOYES = await api('GET','/api/employes');
+  const sel = document.getElementById('avs-filter-emp');
+  sel.innerHTML = '<option value="">Tous les employés</option>' + EMPLOYES.map(e=>`<option value="${e.id}">${e.prenom} ${e.nom}</option>`).join('');
+  document.getElementById('avs-filter-mois').value = thisMonth();
   loadAvs();
 }
 
 async function loadAvs(){
-  const empId=document.getElementById('avs-filter-emp').value;
-  const mois=document.getElementById('avs-filter-mois').value;
-  let url='/api/avs?';
-  if(empId) url+=`employe_id=${empId}&`;
-  if(mois) url+=`mois=${mois}`;
-  const avsList=await api('GET',url);
-  const tbody=document.getElementById('avs-tbody');
-  if(!avsList.length){tbody.innerHTML='<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">💸</div>Aucune AVS</div></td></tr>';return;}
-  tbody.innerHTML=avsList.map(a=>{
-    const emp=EMPLOYES.find(e=>e.id===a.employe_id);
+  const empId = document.getElementById('avs-filter-emp').value;
+  const mois = document.getElementById('avs-filter-mois').value;
+  let url = '/api/avs?';
+  if(empId) url += `employe_id=${empId}&`;
+  if(mois) url += `mois=${mois}`;
+  const avsList = await api('GET', url);
+  const tbody = document.getElementById('avs-tbody');
+  if(!avsList.length){ tbody.innerHTML='<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">💸</div>Aucune AVS</div></td></tr>'; return; }
+  tbody.innerHTML = avsList.map(a=>{
+    const emp = EMPLOYES.find(e=>e.id===a.employe_id);
     return `<tr>
       <td><strong style="color:var(--text)">${emp?`${emp.prenom} ${emp.nom}`:'?'}</strong></td>
       <td><span class="badge badge-blue">${a.mois}</span></td>
@@ -906,18 +817,20 @@ async function loadAvs(){
 }
 
 function openAvsModal(){
-  const sel=document.getElementById('avs-emp-select');
-  sel.innerHTML=EMPLOYES.map(e=>`<option value="${e.id}">${e.prenom} ${e.nom}</option>`).join('');
-  document.getElementById('avs-mois').value=thisMonth();
-  document.getElementById('avs-montant').value='';
-  document.getElementById('avs-note').value='';
+  const sel = document.getElementById('avs-emp-select');
+  sel.innerHTML = EMPLOYES.map(e=>`<option value="${e.id}">${e.prenom} ${e.nom}</option>`).join('');
+  document.getElementById('avs-mois').value = thisMonth();
+  document.getElementById('avs-montant').value = '';
+  document.getElementById('avs-note').value = '';
   openModal('modal-avs');
 }
+
 async function saveAvs(){
-  const data={employe_id:+document.getElementById('avs-emp-select').value,mois:document.getElementById('avs-mois').value,montant:+document.getElementById('avs-montant').value,note:document.getElementById('avs-note').value};
-  try{await api('POST','/api/avs',data); toast('AVS enregistrée'); closeModal('modal-avs'); loadAvs();}
-  catch(e){toast(e.message,'error');}
+  const data = { employe_id:+document.getElementById('avs-emp-select').value, mois:document.getElementById('avs-mois').value, montant:+document.getElementById('avs-montant').value, note:document.getElementById('avs-note').value };
+  try{ await api('POST','/api/avs',data); toast('AVS enregistrée'); closeModal('modal-avs'); loadAvs(); }
+  catch(e){ toast(e.message,'error'); }
 }
+
 async function deleteAvs(id){
   if(!confirm('Supprimer cette AVS ?')) return;
   await api('DELETE',`/api/avs/${id}`); toast('AVS supprimée'); loadAvs();
@@ -925,26 +838,30 @@ async function deleteAvs(id){
 
 // ── DASHBOARD ─────────────────────────────────────────────
 async function loadDashboard(){
-  const date=document.getElementById('db-date').value;
+  const date = document.getElementById('db-date').value;
   if(!date) return;
-  try{const data=await api('GET',`/api/dashboard?date=${date}`); renderDashboard(data);}
-  catch(e){toast(e.message,'error');}
+  try{
+    const data = await api('GET',`/api/dashboard?date=${date}`);
+    renderDashboard(data);
+  }catch(e){ toast(e.message,'error'); }
 }
 
 function renderDashboard(data){
-  const t=data.totaux;
-  const maxVol=Math.max(...data.sites.map(s=>s.session?.volume_depot||0),1);
-  const siteBars=data.sites.map(s=>{
-    const vol=s.session?.volume_depot||0;
-    const w=Math.round((vol/maxVol)*100);
+  const t = data.totaux;
+  const maxVol = Math.max(...data.sites.map(s=>s.session?.volume_depot||0),1);
+
+  const siteBars = data.sites.map(s=>{
+    const vol = s.session?.volume_depot||0;
+    const w = Math.round((vol/maxVol)*100);
     return `<div style="display:flex;align-items:center;gap:10px;font-size:13px;margin-bottom:8px">
-      <span style="min-width:130px;color:var(--text2);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.site.nom}</span>
+      <span style="min-width:140px;color:var(--text2);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.site.nom}</span>
       <div style="flex:1;background:var(--bg3);border-radius:4px;height:20px;overflow:hidden">
         <div style="width:${w}%;height:100%;background:var(--accent);border-radius:4px;display:flex;align-items:center;padding:0 6px;font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:600;color:#000">${w>20?fmt(vol)+' FCFA':''}</div>
       </div>
     </div>`;
   }).join('');
-  const siteCards=data.sites.map(s=>`
+
+  const siteCards = data.sites.map(s=>`
     <div class="card">
       <div style="font-size:15px;font-weight:700;color:var(--accent);margin-bottom:14px">🏢 ${s.site.nom}</div>
       <div class="grid-2" style="gap:8px;margin-bottom:12px">
@@ -956,7 +873,8 @@ function renderDashboard(data){
       <div class="result-row" style="border-top:1px solid rgba(0,212,255,.3)"><span style="font-weight:700;color:var(--text)">Net patron</span><span class="mono" style="color:${s.net_patron>=0?'var(--accent)':'var(--red)'};font-size:15px;font-weight:700">${fmt(s.net_patron)} FCFA</span></div>
       ${s.employes_perf.length?`<div style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px">${s.employes_perf.map(p=>`<div class="flex justify-between" style="font-size:12px;padding:3px 0;color:var(--text3)"><span>${p.employe?.prenom} ${p.employe?.nom}</span><span class="mono" style="color:var(--amber)">${fmt(p.remuneration)} FCFA</span></div>`).join('')}</div>`:''}
     </div>`).join('');
-  document.getElementById('db-content').innerHTML=`
+
+  document.getElementById('db-content').innerHTML = `
     <div class="summary-bar">
       <div class="sum-item"><div class="sum-label">Vol. dépôt</div><div class="sum-val accent">${fmt(t.volume_depot)} <span style="font-size:12px">FCFA</span></div></div>
       <div class="sum-item"><div class="sum-label">Vol. retrait</div><div class="sum-val amber">${fmt(t.volume_retrait)} <span style="font-size:12px">FCFA</span></div></div>
@@ -980,16 +898,16 @@ function renderDashboard(data){
 
 // ── HISTORIQUE ────────────────────────────────────────────
 async function loadHistorique(){
-  const debut=document.getElementById('hist-debut').value;
-  const fin=document.getElementById('hist-fin').value;
+  const debut = document.getElementById('hist-debut').value;
+  const fin = document.getElementById('hist-fin').value;
   if(!debut||!fin) return toast('Sélectionnez les dates','error');
-  const data=await api('GET',`/api/historique?debut=${debut}&fin=${fin}`);
-  const content=document.getElementById('hist-content');
-  if(!data.length){content.innerHTML='<div class="empty-state"><div class="empty-icon">📅</div>Aucune donnée</div>';return;}
-  const totC=data.reduce((a,d)=>a+d.commission,0);
-  const totN=data.reduce((a,d)=>a+d.net,0);
-  const totV=data.reduce((a,d)=>a+d.volume_depot,0);
-  content.innerHTML=`
+  const data = await api('GET',`/api/historique?debut=${debut}&fin=${fin}`);
+  const content = document.getElementById('hist-content');
+  if(!data.length){ content.innerHTML='<div class="empty-state"><div class="empty-icon">📅</div>Aucune donnée</div>'; return; }
+  const totC = data.reduce((a,d)=>a+d.commission,0);
+  const totN = data.reduce((a,d)=>a+d.net,0);
+  const totV = data.reduce((a,d)=>a+d.volume_depot,0);
+  content.innerHTML = `
     <div class="grid-3 mb-16" style="margin-bottom:16px">
       <div class="stat"><div class="stat-label">Vol. dépôt total</div><div class="stat-value accent" style="font-size:20px">${fmt(totV)}</div></div>
       <div class="stat"><div class="stat-label">Commissions brutes</div><div class="stat-value green" style="font-size:20px">${fmt(totC)}</div></div>
@@ -1010,14 +928,14 @@ async function loadHistorique(){
 
 // ── INIT ──────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async()=>{
-  SITES=await api('GET','/api/sites').catch(()=>[]);
-  EMPLOYES=await api('GET','/api/employes').catch(()=>[]);
-  const d=today();
-  document.getElementById('db-date').value=d;
-  document.getElementById('saisie-date').value=d;
-  const m1=d.slice(0,8)+'01';
-  document.getElementById('hist-debut').value=m1;
-  document.getElementById('hist-fin').value=d;
+  SITES = await api('GET','/api/sites').catch(()=>[]);
+  EMPLOYES = await api('GET','/api/employes').catch(()=>[]);
+  const d = today();
+  document.getElementById('db-date').value = d;
+  document.getElementById('saisie-date').value = d;
+  const m1 = d.slice(0,8)+'01';
+  document.getElementById('hist-debut').value = m1;
+  document.getElementById('hist-fin').value = d;
   loadDashboard();
 });
 </script>
