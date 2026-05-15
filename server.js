@@ -333,6 +333,58 @@ app.get('/api/historique', (req, res) => {
   res.json(Object.values(byDate).sort((a, b) => b.date.localeCompare(a.date)).map(d => ({ ...d, net: d.commission - (d.remuneration || 0) })));
 });
 
+// ─── HISTORIQUE PAR SITE ─────────────────────────────────
+app.get('/api/historique-sites', (req, res) => {
+  const { debut, fin } = req.query;
+  const sites = DB.sites.filter(s => s.actif);
+
+  const sitesData = sites.map(site => {
+    let sessions = DB.sessions.filter(s => s.site_id === site.id);
+    if (debut) sessions = sessions.filter(s => s.date >= debut);
+    if (fin)   sessions = sessions.filter(s => s.date <= fin);
+
+    const totalDepot    = sessions.reduce((a, s) => a + s.volume_depot, 0);
+    const totalRetrait  = sessions.reduce((a, s) => a + s.volume_retrait, 0);
+    const totalComDepot = sessions.reduce((a, s) => a + s.commission_depot, 0);
+    const totalComRetrait = sessions.reduce((a, s) => a + s.commission_retrait, 0);
+    const totalCom      = sessions.reduce((a, s) => a + s.total_commission, 0);
+
+    // Rémunérations employés sur ce site sur la période
+    let perfs = DB.performances.filter(p => p.site_id === site.id);
+    if (debut) perfs = perfs.filter(p => p.date >= debut);
+    if (fin)   perfs = perfs.filter(p => p.date <= fin);
+    const totalRemuEq = perfs.reduce((a, p) => a + p.remuneration, 0);
+
+    // Historique jour par jour
+    const jours = sessions
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .map(s => ({
+        date: s.date,
+        volume_depot: s.volume_depot,
+        volume_retrait: s.volume_retrait,
+        commission_depot: Math.round(s.commission_depot),
+        commission_retrait: Math.round(s.commission_retrait),
+        total_commission: Math.round(s.total_commission)
+      }));
+
+    return {
+      site,
+      totaux: {
+        volume_depot: totalDepot,
+        volume_retrait: totalRetrait,
+        commission_depot: Math.round(totalComDepot),
+        commission_retrait: Math.round(totalComRetrait),
+        commission_brute: Math.round(totalCom),
+        remuneration_equipe: Math.round(totalRemuEq),
+        net_patron: Math.round(totalCom - totalRemuEq)
+      },
+      jours
+    };
+  });
+
+  res.json(sitesData);
+});
+
 // ─── BACKUP / RESTORE ────────────────────────────────────
 app.get('/api/backup', (req, res) => {
   res.setHeader('Content-Disposition', 'attachment; filename="yapson-backup-' + new Date().toISOString().slice(0,10) + '.json"');
