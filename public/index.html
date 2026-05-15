@@ -987,69 +987,89 @@ function renderHistSites(sitesData){
   const container = document.getElementById('hist-sites-content');
   if(!sitesData || !sitesData.length){ container.innerHTML='<div class="empty-state"><div class="empty-icon">🏢</div>Aucune donnée</div>'; return; }
 
-  // Cartes résumé globales par site
-  const cardsHtml = '<div class="grid-auto" style="margin-bottom:20px">'
-    + sitesData.map(s =>
-      '<div class="card">'
-      +'<div style="font-size:15px;font-weight:700;color:var(--accent);margin-bottom:12px">🏢 '+s.site.nom+'</div>'
-      +'<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(--border)">'
-        +'<span style="color:var(--text3)">Vol. dépôt</span><span class="mono">'+fmt(s.totaux.volume_depot)+' FCFA</span>'
-      +'</div>'
-      +'<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(--border)">'
-        +'<span style="color:var(--text3)">Vol. retrait</span><span class="mono">'+fmt(s.totaux.volume_retrait)+' FCFA</span>'
-      +'</div>'
-      +'<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(--border)">'
-        +'<span style="color:var(--text3)">Com. dépôt</span><span class="mono" style="color:var(--green)">'+fmt(s.totaux.commission_depot)+' FCFA</span>'
-      +'</div>'
-      +'<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(--border)">'
-        +'<span style="color:var(--text3)">Com. retrait</span><span class="mono" style="color:var(--green)">'+fmt(s.totaux.commission_retrait)+' FCFA</span>'
-      +'</div>'
-      +'<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(--border)">'
-        +'<span style="color:var(--text3)">Commission brute</span><span class="mono" style="color:var(--green);font-weight:600">'+fmt(s.totaux.commission_brute)+' FCFA</span>'
-      +'</div>'
-      +'<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(--border)">'
-        +'<span style="color:var(--text3)">Rémun. équipe</span><span class="mono" style="color:var(--red)">-'+fmt(s.totaux.remuneration_equipe)+' FCFA</span>'
-      +'</div>'
-      +'<div style="display:flex;justify-content:space-between;font-size:15px;padding:8px 0;margin-top:4px">'
-        +'<span style="font-weight:700;color:var(--text)">Net patron</span>'
-        +'<span class="mono" style="color:'+(s.totaux.net_patron>=0?'var(--accent)':'var(--red)')+';font-weight:700;font-size:16px">'+fmt(s.totaux.net_patron)+' FCFA</span>'
-      +'</div>'
-      +'</div>'
-    ).join('') + '</div>';
-
-  // Tableaux détaillés jour par jour par site
-  const tablesHtml = sitesData.map(s => {
+  // Un bloc par site : tableau jours + stats à droite comme Excel
+  const html = sitesData.map(s => {
     if(!s.jours.length) return '';
+
+    // Lignes du tableau jour par jour
     const rows = s.jours.map(j =>
       '<tr>'
-      +'<td class="mono" style="font-size:12px">'+fmtDate(j.date)+'</td>'
+      +'<td class="mono" style="font-size:12px;color:var(--text2)">'+fmtDate(j.date)+'</td>'
       +'<td class="mono" style="text-align:right">'+(j.volume_depot>0?fmt(j.volume_depot):'')+'</td>'
       +'<td class="mono" style="text-align:right">'+(j.volume_retrait>0?fmt(j.volume_retrait):'')+'</td>'
-      +'<td class="mono" style="text-align:right;color:var(--green)">'+(j.commission_depot>0?fmt(j.commission_depot):'0')+'</td>'
-      +'<td class="mono" style="text-align:right;color:var(--green)">'+(j.commission_retrait>0?fmt(j.commission_retrait):'0')+'</td>'
-      +'<td class="mono" style="text-align:right;color:var(--accent);font-weight:600">'+fmt(j.total_commission)+'</td>'
       +'</tr>'
     ).join('');
-    return '<div class="card" style="margin-bottom:16px">'
-      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">'
-        +'<div style="font-size:15px;font-weight:700;color:var(--accent)">🏢 '+s.site.nom+'</div>'
-        +'<div class="avs-badge">TOTAL: '+fmt(s.totaux.commission_brute)+' FCFA</div>'
+
+    // Panneau stats à droite (style capture Excel)
+    const stats =
+      '<div style="display:flex;flex-direction:column;gap:12px;min-width:220px">'
+
+      // TOTAL DEPOT / TOTAL RETRAIT
+      +'<div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;overflow:hidden">'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr">'
+          +'<div style="padding:8px 12px;border-right:1px solid var(--border2)">'
+            +'<div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">TOTAL DEPOT</div>'
+            +'<div class="mono" style="font-size:14px;font-weight:700;color:var(--text)">'+fmt(s.totaux.volume_depot)+'</div>'
+          +'</div>'
+          +'<div style="padding:8px 12px">'
+            +'<div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">TOTAL RETRAIT</div>'
+            +'<div class="mono" style="font-size:14px;font-weight:700;color:var(--text)">'+fmt(s.totaux.volume_retrait)+'</div>'
+          +'</div>'
+        +'</div>'
       +'</div>'
-      +'<div class="table-wrap"><table>'
-      +'<thead><tr><th>Date</th><th style="text-align:right">Dépôt</th><th style="text-align:right">Retrait</th><th style="text-align:right">Com. dépôt</th><th style="text-align:right">Com. retrait</th><th style="text-align:right">Total com.</th></tr></thead>'
-      +'<tbody>'+rows+'</tbody>'
-      +'<tfoot><tr style="border-top:2px solid var(--border2)">'
-        +'<td style="font-weight:600;color:var(--text);padding:10px 12px">TOTAL</td>'
-        +'<td class="mono" style="text-align:right;font-weight:600">'+fmt(s.totaux.volume_depot)+'</td>'
-        +'<td class="mono" style="text-align:right;font-weight:600">'+fmt(s.totaux.volume_retrait)+'</td>'
-        +'<td class="mono" style="text-align:right;color:var(--green)">'+fmt(s.totaux.commission_depot)+'</td>'
-        +'<td class="mono" style="text-align:right;color:var(--green)">'+fmt(s.totaux.commission_retrait)+'</td>'
-        +'<td class="mono" style="text-align:right;color:var(--accent);font-weight:700;font-size:14px">'+fmt(s.totaux.commission_brute)+'</td>'
-      +'</tr></tfoot>'
-      +'</table></div></div>';
+
+      // GAIN DEPOT / GAIN RETRAIT
+      +'<div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;overflow:hidden">'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr">'
+          +'<div style="padding:8px 12px;border-right:1px solid var(--border2)">'
+            +'<div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">GAIN DEPOT</div>'
+            +'<div class="mono" style="font-size:14px;font-weight:700;color:var(--green)">'+fmt(s.totaux.commission_depot)+'</div>'
+          +'</div>'
+          +'<div style="padding:8px 12px">'
+            +'<div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">GAIN RETRAIT</div>'
+            +'<div class="mono" style="font-size:14px;font-weight:700;color:var(--green)">'+fmt(s.totaux.commission_retrait)+'</div>'
+          +'</div>'
+        +'</div>'
+      +'</div>'
+
+      // RÉMUNÉRATION ÉQUIPE
+      +'<div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:8px 12px">'
+        +'<div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">RÉMUN. ÉQUIPE</div>'
+        +'<div class="mono" style="font-size:14px;font-weight:700;color:var(--red)">-'+fmt(s.totaux.remuneration_equipe)+'</div>'
+      +'</div>'
+
+      // GAIN NET (en surbrillance comme Excel)
+      +'<div style="background:rgba(0,212,255,.12);border:2px solid var(--accent);border-radius:8px;padding:10px 14px">'
+        +'<div style="font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">GAIN NET</div>'
+        +'<div class="mono" style="font-size:18px;font-weight:700;color:'+(s.totaux.net_patron>=0?'var(--accent)':'var(--red)')+'">'+fmt(s.totaux.net_patron)+'</div>'
+      +'</div>'
+
+      +'</div>';
+
+    return '<div class="card" style="margin-bottom:20px">'
+      +'<div style="font-size:16px;font-weight:700;color:var(--accent);margin-bottom:16px">🏢 '+s.site.nom+'</div>'
+      +'<div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">'
+        // Tableau gauche
+        +'<div style="flex:1;min-width:280px"><div class="table-wrap"><table>'
+          +'<thead><tr>'
+            +'<th>DATE</th>'
+            +'<th style="text-align:right">DEPOT</th>'
+            +'<th style="text-align:right">RETRAIT</th>'
+          +'</tr></thead>'
+          +'<tbody>'+rows+'</tbody>'
+          +'<tfoot><tr style="border-top:2px solid var(--border2)">'
+            +'<td style="font-weight:600;color:var(--text);padding:8px 12px">TOTAL</td>'
+            +'<td class="mono" style="text-align:right;font-weight:700;color:var(--text)">'+fmt(s.totaux.volume_depot)+'</td>'
+            +'<td class="mono" style="text-align:right;font-weight:700;color:var(--text)">'+fmt(s.totaux.volume_retrait)+'</td>'
+          +'</tr></tfoot>'
+        +'</table></div></div>'
+        // Stats droite
+        + stats
+      +'</div>'
+    +'</div>';
   }).join('');
 
-  container.innerHTML = cardsHtml + tablesHtml;
+  container.innerHTML = html;
 }
 
 async function loadHistSites(debut, fin){
