@@ -7,26 +7,97 @@ const PORT = process.env.PORT || 3000;
 
 const dataDir = process.env.DATA_DIR || path.join(__dirname, 'data');
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
-
 const DB_FILE = path.join(dataDir, 'manager.json');
 
-function loadDb() {
-  if (fs.existsSync(DB_FILE)) {
-    try { return JSON.parse(fs.readFileSync(DB_FILE, 'utf8')); } catch(e) {}
+// Railway injecte automatiquement les variables du service Postgres dans le même projet.
+// On construit la connexion depuis DATABASE_URL, sinon depuis les variables PG individuelles.
+function getPgConfig() {
+  if (process.env.DATABASE_URL) {
+    return {
+      connectionString: process.env.DATABASE_URL,
+      ssl: process.env.DATABASE_URL.includes('localhost') ? false : { rejectUnauthorized: false }
+    };
   }
-  return {
-    sites: [], employes: [], employe_sites: [],
-    sessions: [], performances: [], avs: [],
-    nextId: { sites: 1, employes: 1, sessions: 1, performances: 1, avs: 1 }
-  };
+  // Variables individuelles auto-injectées par Railway
+  const host = process.env.PGHOST || process.env.POSTGRES_HOST;
+  const user = process.env.PGUSER || process.env.POSTGRES_USER;
+  const password = process.env.PGPASSWORD || process.env.POSTGRES_PASSWORD;
+  const database = process.env.PGDATABASE || process.env.POSTGRES_DB;
+  const port = process.env.PGPORT || process.env.POSTGRES_PORT || 5432;
+  if (host && user && password && database) {
+    return {
+      host, user, password, database, port: +port,
+      ssl: host.includes('localhost') ? false : { rejectUnauthorized: false }
+    };
+  }
+  return null;
 }
 
+const PG_CONFIG = getPgConfig();
+let pool = null;
+let usePg = false;
+
+const EMPTY_DB = {
+  sites: [], employes: [], employe_sites: [],
+  sessions: [], performances: [], avs: [],
+  nextId: { sites: 1, employes: 1, sessions: 1, performances: 1, avs: 1 }
+};
+
+let DB = JSON.parse(JSON.stringify(EMPTY_DB));
+
+// ─── PERSISTANCE ─────────────────────────────────────────
+// Utilise PostgreSQL si config disponible, sinon fichier JSON local.
+async function initDb() {
+  if (PG_CONFIG) {
+    try {
+      const { Pool } = require('pg');
+      pool = new Pool(PG_CONFIG);
+      // Table clé-valeur : une seule ligne contient tout le document JSON
+      await pool.query('CREATE TABLE IF NOT EXISTS app_data (id INT PRIMARY KEY, data JSONB NOT NULL)');
+      const r = await pool.query('SELECT data FROM app_data WHERE id = 1');
+      if (r.rows.length) {
+        DB = r.rows[0].data;
+      } else {
+        // Première fois : migrer depuis le fichier JSON s'il existe
+        if (fs.existsSync(DB_FILE)) {
+          try { DB = JSON.parse(fs.readFileSync(DB_FILE, 'utf8')); } catch(e) {}
+        }
+        await pool.query('INSERT INTO app_data (id, data) VALUES (1, $1)', [JSON.stringify(DB)]);
+      }
+      usePg = true;
+      console.log('✅ PostgreSQL connecté — données persistantes');
+    } catch (e) {
+      console.error('⚠️ PostgreSQL indisponible, fallback fichier JSON:', e.message);
+      usePg = false;
+      loadFromFile();
+    }
+  } else {
+    loadFromFile();
+  }
+  // Garantir les champs
+  if (!DB.avs) { DB.avs = []; }
+  if (!DB.nextId) DB.nextId = { sites: 1, employes: 1, sessions: 1, performances: 1, avs: 1 };
+  if (!DB.nextId.avs) DB.nextId.avs = 1;
+}
+
+function loadFromFile() {
+  if (fs.existsSync(DB_FILE)) {
+    try { DB = JSON.parse(fs.readFileSync(DB_FILE, 'utf8')); return; } catch(e) {}
+  }
+  DB = JSON.parse(JSON.stringify(EMPTY_DB));
+}
+
+// Sauvegarde : PostgreSQL (async, non bloquant) + fichier local en secours
 function saveDb(data) {
-  fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+  DB = data;
+  // Toujours écrire le fichier local (secours immédiat)
+  try { fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2)); } catch(e) {}
+  // Écrire dans PostgreSQL en arrière-plan
+  if (usePg && pool) {
+    pool.query('UPDATE app_data SET data = $1 WHERE id = 1', [JSON.stringify(data)])
+      .catch(e => console.error('Erreur sauvegarde PG:', e.message));
+  }
 }
-
-let DB = loadDb();
-if (!DB.avs) { DB.avs = []; DB.nextId.avs = 1; saveDb(DB); }
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -418,4 +489,10 @@ app.post('/api/restore', (req, res) => {
 });
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
-app.listen(PORT, () => console.log(`✅ Yapson Manager démarré sur port ${PORT}`));
+
+initDb().then(() => {
+  app.listen(PORT, () => console.log(`✅ Yapson Manager démarré sur port ${PORT}`));
+}).catch(e => {
+  console.error('Erreur init DB:', e);
+  app.listen(PORT, () => console.log(`⚠️ Yapson Manager démarré (sans PG) sur port ${PORT}`));
+});
