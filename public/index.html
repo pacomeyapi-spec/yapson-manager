@@ -283,7 +283,7 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text)}
   </div>
   <div class="card">
     <div class="table-wrap">
-      <table><thead><tr><th>Employé</th><th>Mois</th><th>Montant</th><th>Note</th><th>Actions</th></tr></thead>
+      <table><thead><tr><th>Employé</th><th>Date</th><th>Montant</th><th>Note</th><th>Actions</th></tr></thead>
       <tbody id="avs-tbody"></tbody></table>
     </div>
   </div>
@@ -361,7 +361,7 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text)}
     <div class="modal-title"><span>Nouvelle avance sur salaire</span><span class="modal-close" onclick="closeModal('modal-avs')">✕</span></div>
     <div class="form-group"><label>Employé *</label><select id="avs-emp-select"></select></div>
     <div class="grid-2">
-      <div class="form-group"><label>Mois concerné *</label><input type="month" id="avs-mois"></div>
+      <div class="form-group"><label>Date de l'AVS *</label><input type="date" id="avs-date"></div>
       <div class="form-group"><label>Montant (FCFA) *</label><input id="avs-montant" type="number" placeholder="ex: 5000"></div>
     </div>
     <div class="form-group"><label>Note (optionnel)</label><input id="avs-note" placeholder="ex: Avance urgence"></div>
@@ -680,15 +680,12 @@ function renderRecap(data){
   });
 
   msgLines.push('');
-  msgLines.push('AVS:          ' + fmt(totaux.avs) + ' FCFA');
+  msgLines.push('GRAND TOTAL:     ' + fmt(totaux.grand_total_mois) + ' FCFA');
+  msgLines.push('AVS du jour:     ' + fmt(totaux.avs_jour) + ' FCFA');
+  msgLines.push('Total AVS mois:  ' + fmt(totaux.avs_mois) + ' FCFA');
   msgLines.push('');
-  msgLines.push('GRAND TOTAL');
-  msgLines.push(fmt(totaux.grand_total_mois) + ' FCFA');
-  if(totaux.avs > 0){
-    msgLines.push('');
-    msgLines.push('NET À PERCEVOIR');
-    msgLines.push(fmt(totaux.net) + ' FCFA');
-  }
+  msgLines.push('NET À PERCEVOIR');
+  msgLines.push(fmt(totaux.net) + ' FCFA');
   const msgText = msgLines.join('\n');
 
   // ── TABLEAUX MENSUELS PAR SITE ───────────────────────────
@@ -747,12 +744,12 @@ function renderRecap(data){
     + '<div class="card-title">AVS — ' + moisLabel + '</div>'
     + totaux.avs_details.map(a =>
         '<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:13px">'
-        + '<span style="color:var(--text2)">' + (a.note || 'Avance') + '</span>'
+        + '<span style="color:var(--text2)">' + fmtDate(a.date || (a.mois+"-01")) + ' · ' + (a.note || 'Avance') + '</span>'
         + '<span class="avs-badge">-' + fmt(a.montant) + ' FCFA</span>'
         + '</div>').join('')
     + '<div style="display:flex;justify-content:space-between;padding:7px 0;font-size:14px;font-weight:600">'
-    + '<span style="color:var(--text)">Total AVS</span>'
-    + '<span style="color:var(--amber);font-family:var(--font-mono,monospace)">-' + fmt(totaux.avs) + ' FCFA</span>'
+    + '<span style="color:var(--text)">Total AVS mois</span>'
+    + '<span style="color:var(--amber);font-family:var(--font-mono,monospace)">-' + fmt(totaux.avs_mois) + ' FCFA</span>'
     + '</div></div>' : '';
 
   document.getElementById('recap-content').innerHTML =
@@ -778,20 +775,22 @@ function renderRecap(data){
         + '<span style="color:var(--text2)">' + s.admin_label + '</span>'
         + '<span class="mono" style="color:var(--green)">' + fmt(s.mensuel.total) + ' FCFA</span>'
         + '</div>').join('')
-    + (totaux.avs > 0 ?
-        '<div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)">'
-        + '<span style="color:var(--text2)">AVS</span>'
-        + '<span class="mono" style="color:var(--amber)">-' + fmt(totaux.avs) + ' FCFA</span>'
-        + '</div>' : '')
-    + '<div style="display:flex;justify-content:space-between;font-size:16px;padding:10px 0;margin-top:4px">'
+    + '<div style="display:flex;justify-content:space-between;font-size:16px;padding:10px 0;margin-top:4px;border-top:1px solid var(--border)">'
     + '<span style="font-weight:700;color:var(--text)">GRAND TOTAL</span>'
     + '<span class="mono" style="color:var(--accent);font-weight:700;font-size:18px">' + fmt(totaux.grand_total_mois) + ' FCFA</span>'
     + '</div>'
-    + (totaux.avs > 0 ?
-        '<div style="display:flex;justify-content:space-between;font-size:14px;padding:4px 0">'
-        + '<span style="color:var(--text)">Net à percevoir</span>'
-        + '<span class="mono" style="color:' + (totaux.net >= 0 ? 'var(--green)' : 'var(--red)') + ';font-weight:700">' + fmt(totaux.net) + ' FCFA</span>'
-        + '</div>' : '')
+    + '<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0">'
+    + '<span style="color:var(--text2)">AVS du jour (' + dateLabel + ')</span>'
+    + '<span class="mono" style="color:var(--amber)">-' + fmt(totaux.avs_jour) + ' FCFA</span>'
+    + '</div>'
+    + '<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(--border)">'
+    + '<span style="color:var(--text3)">Total AVS mois</span>'
+    + '<span class="mono" style="color:var(--text3)">' + fmt(totaux.avs_mois) + ' FCFA</span>'
+    + '</div>'
+    + '<div style="display:flex;justify-content:space-between;font-size:15px;padding:8px 0">'
+    + '<span style="color:var(--text);font-weight:700">NET À PERCEVOIR</span>'
+    + '<span class="mono" style="color:' + (totaux.net >= 0 ? 'var(--green)' : 'var(--red)') + ';font-weight:700;font-size:16px">' + fmt(totaux.net) + ' FCFA</span>'
+    + '</div>'
     + avsHtml
     + '</div>'
 
@@ -841,7 +840,7 @@ async function loadAvs(){
     const emp = EMPLOYES.find(e=>e.id===a.employe_id);
     return `<tr>
       <td><strong style="color:var(--text)">${emp?`${emp.prenom} ${emp.nom}`:'?'}</strong></td>
-      <td><span class="badge badge-blue">${a.mois}</span></td>
+      <td><span class="badge badge-blue">${fmtDate(a.date || (a.mois+'-01'))}</span></td>
       <td class="mono" style="color:var(--amber)">${fmt(a.montant)} FCFA</td>
       <td style="color:var(--text3);font-size:13px">${a.note||'—'}</td>
       <td><button class="btn btn-sm btn-danger" onclick="deleteAvs(${a.id})">🗑</button></td>
@@ -852,14 +851,16 @@ async function loadAvs(){
 function openAvsModal(){
   const sel = document.getElementById('avs-emp-select');
   sel.innerHTML = EMPLOYES.map(e=>`<option value="${e.id}">${e.prenom} ${e.nom}</option>`).join('');
-  document.getElementById('avs-mois').value = thisMonth();
+  document.getElementById('avs-date').value = today();
   document.getElementById('avs-montant').value = '';
   document.getElementById('avs-note').value = '';
   openModal('modal-avs');
 }
 
 async function saveAvs(){
-  const data = { employe_id:+document.getElementById('avs-emp-select').value, mois:document.getElementById('avs-mois').value, montant:+document.getElementById('avs-montant').value, note:document.getElementById('avs-note').value };
+  const dateVal = document.getElementById('avs-date').value;
+  if(!dateVal) return toast('Sélectionnez la date de l AVS','error');
+  const data = { employe_id:+document.getElementById('avs-emp-select').value, date:dateVal, montant:+document.getElementById('avs-montant').value, note:document.getElementById('avs-note').value };
   try{ await api('POST','/api/avs',data); toast('AVS enregistrée'); closeModal('modal-avs'); loadAvs(); }
   catch(e){ toast(e.message,'error'); }
 }

@@ -182,9 +182,13 @@ app.get('/api/avs', (req, res) => {
 });
 
 app.post('/api/avs', (req, res) => {
-  const { employe_id, mois, montant, note } = req.body;
-  if (!employe_id || !mois || !montant) return res.status(400).json({ error: 'Données manquantes' });
-  const avs = { id: DB.nextId.avs++, employe_id: +employe_id, mois, montant: +montant, note: note || '', created_at: new Date().toISOString() };
+  const { employe_id, mois, date, montant, note } = req.body;
+  if (!employe_id || !montant) return res.status(400).json({ error: 'Données manquantes' });
+  // date = jour précis de l'AVS (YYYY-MM-DD). mois dérivé de la date si fournie.
+  const avsDate = date || (mois ? mois + '-01' : null);
+  if (!avsDate) return res.status(400).json({ error: 'Date requise' });
+  const avsMois = avsDate.slice(0, 7);
+  const avs = { id: DB.nextId.avs++, employe_id: +employe_id, date: avsDate, mois: avsMois, montant: +montant, note: note || '', created_at: new Date().toISOString() };
   DB.avs.push(avs);
   saveDb(DB);
   res.json(avs);
@@ -226,9 +230,18 @@ app.get('/api/recap/:employe_id', (req, res) => {
   );
   const perfsDay = perfsMonth.filter(p => p.date === date);
 
-  // AVS du mois
+  // AVS du mois (toutes) — pour le cumul
   const avsMonth = DB.avs.filter(a => a.employe_id === empId && a.mois === mois);
-  const totalAvs = avsMonth.reduce((a, av) => a + av.montant, 0);
+  const totalAvsMois = avsMonth.reduce((a, av) => a + av.montant, 0);
+
+  // AVS prises le jour sélectionné uniquement
+  const avsJourList = avsMonth.filter(a => (a.date || (a.mois + '-01')) === date);
+  const avsJour = avsJourList.reduce((a, av) => a + av.montant, 0);
+
+  // Cumul AVS jusqu'à la date sélectionnée (incluse)
+  const avsCumul = avsMonth
+    .filter(a => (a.date || (a.mois + '-01')) <= date)
+    .reduce((a, av) => a + av.montant, 0);
 
   // ── Stats PAR SITE ──────────────────────────────────────
   const parSite = allSites.map(site => {
@@ -286,9 +299,12 @@ app.get('/api/recap/:employe_id', (req, res) => {
       vol_jour: totalVolJour,
       com_jour: totalComJour,
       grand_total_mois: grandTotalMois,
-      avs: Math.round(totalAvs),
+      avs_jour: Math.round(avsJour),           // AVS prise ce jour précis
+      avs_mois: Math.round(totalAvsMois),      // Total AVS du mois entier
+      avs_cumul: Math.round(avsCumul),         // Cumul AVS jusqu'à ce jour
+      avs_jour_details: avsJourList,
       avs_details: avsMonth,
-      net: Math.round(grandTotalMois - totalAvs)
+      net: Math.round(grandTotalMois - avsJour) // NET = grand total - AVS du jour seulement
     }
   });
 });
